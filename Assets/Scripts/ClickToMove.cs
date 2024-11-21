@@ -9,13 +9,13 @@ public class ClickToMove : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        //agent = GetComponent<NavMeshAgent>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButton(0))
+        /*if (Input.GetMouseButton(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -23,6 +23,6 @@ public class ClickToMove : MonoBehaviour
             {
                 agent.SetDestination(hit.point);
             }
-        }
+        }*/
     }
 }
