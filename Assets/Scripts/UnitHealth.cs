@@ -51,33 +51,57 @@ public class UnitHealth : MonoBehaviour
         }
 
         // Position the health bar above the unit in the world
-        PositionHealthBar();
+        // Only position the health bar if it's still present
+        if (healthBar != null)
+        {
+            PositionHealthBar();
+        }
+
+        // If no soldiers are left or the unit's health is zero, remove the health bar
+        if (soldiers.Count == 0 || currentHealth <= 0)
+        {
+            RemoveHealthBar();
+        }
     }
 
     // Calculate the total health by summing the health of each soldier
     private int CalculateTotalHealth()
     {
         int totalHealth = 0;
-        foreach (GameObject soldier in soldiers)
+
+        // Iterate over all soldiers, skipping any that have been destroyed
+        for (int i = soldiers.Count - 1; i >= 0; i--)  // Loop backward to safely remove elements
         {
+            GameObject soldier = soldiers[i];
+
+            // If soldier is destroyed, remove it from the list
+            if (soldier == null)
+            {
+                soldiers.RemoveAt(i);
+                continue;  // Skip to the next soldier
+            }
+
             SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
             if (soldierHealth != null)
             {
                 totalHealth += soldierHealth.health;
             }
         }
+
         return totalHealth;
     }
 
     // Position the health bar above the unit and make it face the camera
     private void PositionHealthBar()
     {
+        // Check if the healthBar is null before accessing its properties
+        if (healthBar == null) return;
+
         // Get the center of the unit (group of soldiers)
         Vector3 groupCenter = CalculateGroupCenter();
 
         // Set the health bar's position above the group center (adjust the Y value for height)
         healthBar.position = groupCenter + new Vector3(0, heightOffset, 0);
-
     }
 
     // Calculate the group's center based on the soldiers' positions
@@ -91,5 +115,17 @@ public class UnitHealth : MonoBehaviour
             center += soldier.transform.position;
         }
         return center / soldiers.Count;
+    }
+
+    // Remove the health bar when the unit has no soldiers or health
+    private void RemoveHealthBar()
+    {
+        // Only try to remove the health bar if it exists
+        if (healthBar != null)
+        {
+            // Destroy the health bar or deactivate it based on your needs
+            Destroy(healthBar.gameObject);  // If you want to destroy it
+            // healthBar.gameObject.SetActive(false);  // If you want to deactivate it instead
+        }
     }
 }

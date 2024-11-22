@@ -5,11 +5,12 @@ using UnityEngine.AI;
 
 public class UnitManager : MonoBehaviour
 {
-    public List<GameObject> soldiers; // Assign in Inspector or dynamically
+    public List<GameObject> soldiers;
     public float spacing = 2f;        // Spacing between units
 
     private void SetDestination(GameObject soldier, Vector3 position)
     {
+        if (soldier == null) return; // Check if soldier is null
         NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
         if (agent != null)
         {
@@ -17,13 +18,15 @@ public class UnitManager : MonoBehaviour
         }
     }
 
-
     public void ArrangeGrid(Vector3 startPosition, int rows)
     {
         int cols = Mathf.CeilToInt((float)soldiers.Count / rows);
 
         for (int i = 0; i < soldiers.Count; i++)
         {
+            // Skip destroyed soldiers
+            if (soldiers[i] == null) continue;
+
             int row = i / cols;
             int col = i % cols;
 
@@ -31,16 +34,28 @@ public class UnitManager : MonoBehaviour
             SetDestination(soldiers[i], position);
         }
     }
+
     private Vector3 CalculateGroupCenter()
     {
         if (soldiers.Count == 0) return Vector3.zero;
 
         Vector3 center = Vector3.zero;
+        int validSoldiersCount = 0;
+
         foreach (GameObject soldier in soldiers)
         {
+            // Skip destroyed soldiers
+            if (soldier == null) continue;
+
             center += soldier.transform.position;
+            validSoldiersCount++;
         }
-        return center / soldiers.Count;
+
+        if (validSoldiersCount > 0)
+        {
+            return center / validSoldiersCount;
+        }
+        return Vector3.zero;
     }
 
     public void MoveFormation(Vector3 targetPosition)
@@ -49,6 +64,9 @@ public class UnitManager : MonoBehaviour
 
         foreach (GameObject soldier in soldiers)
         {
+            // Skip destroyed soldiers
+            if (soldier == null) continue;
+
             Vector3 offset = soldier.transform.position - groupCenter;
             Vector3 destination = targetPosition + offset;
             SetDestination(soldier, destination);
@@ -66,6 +84,9 @@ public class UnitManager : MonoBehaviour
 
         for (int i = 0; i < soldiers.Count; i++)
         {
+            // Skip destroyed soldiers
+            if (soldiers[i] == null) continue;
+
             int row = i / cols;
             int col = i % cols;
 
@@ -83,7 +104,7 @@ public class UnitManager : MonoBehaviour
         GameObject redArmy = GameObject.Find(parentName);
         if (redArmy != null)
         {
-            // Find all soldiers under the "Red Army 1" group
+            //Find all the soldiers in the related Unit
             soldiers = new List<GameObject>();
             foreach (Transform child in redArmy.transform)
             {
@@ -111,6 +132,5 @@ public class UnitManager : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.G))
             ArrangeGrid(CalculateGroupCenter(), 3); // Arrange grid at current group center
-
     }
 }
