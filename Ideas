@@ -1,0 +1,10 @@
+Ideas for Individual Units:
+  Fighting the enemy unit without order if they are too close.
+  Running away if there are too much more enemy unit then friendly unit. We can do that by counting the enemy units and the friendly units in a speccified radius, if there are 3:1 or more enemy units will panic.
+
+Ideas for General AI:
+  Protecting the Archers. If there are no frienly mlee units in between archers and enemy mlee units the AI will relocate a unit in between.
+  The Cavalry or Shock Troops will try to flank the enemy. There will be a special ability for Cavalry that will give them advantage for Charging. They will use this ability to Hit and Run.
+  The Shild Bearers will try to block Cavalry Charge. They have the ability to get less damage from Cavalry.
+  The AI will try to distract the Shield Bearers with other units before Cavalry Charge.
+  The AI will make the Archers run if there are no mlee units to defend except for Cavalry since they will be faster.
