@@ -7,6 +7,12 @@ TagManager:
   - Soldier
   - RedArmy
   - BlueArmy
+  - RedSoldier
+  - BlueSoldier
+  - RedArcher
+  - BlueArcher
+  - RedCavalry
+  - BlueCavalry
   layers:
   - Default
   - TransparentFX

@@ -7,6 +7,7 @@ public class UnitManager : MonoBehaviour
 {
     public List<GameObject> soldiers;
     public float spacing = 2f;        // Spacing between units
+    public string enemyTag;
 
     private void SetDestination(GameObject soldier, Vector3 position)
     {
@@ -98,8 +99,33 @@ public class UnitManager : MonoBehaviour
         }
     }
 
+    public void AssignEnemyTagToSoldiers()
+    {
+        foreach (GameObject soldier in soldiers)
+        {
+            SoldierHealth soldierScript = soldier.GetComponent<SoldierHealth>();
+            if (soldierScript != null)
+            {
+                soldierScript.enemyTag = enemyTag;
+            }
+        }
+    }
+
     void Start()
     {
+        /*if (gameObject.name.Contains("Red"))
+        {
+            enemyTag = "BlueSoldier";
+        }
+        else if (gameObject.name.Contains("Blue"))
+        {
+            enemyTag = "RedSoldier";
+        }*/
+
+        enemyTag = "BlueSoldier";
+
+        AssignEnemyTagToSoldiers();
+
         string parentName = gameObject.name;
         GameObject redArmy = GameObject.Find(parentName);
         if (redArmy != null)
@@ -120,7 +146,8 @@ public class UnitManager : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetMouseButtonDown(0)) // Left-click to move the whole unit
+        // Move formation on left-click
+        if (Input.GetMouseButtonDown(0))
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -130,7 +157,31 @@ public class UnitManager : MonoBehaviour
             }
         }
 
+        // Rearrange grid with 'G'
         if (Input.GetKeyDown(KeyCode.G))
-            ArrangeGrid(CalculateGroupCenter(), 3); // Arrange grid at current group center
+        {
+            ArrangeGrid(CalculateGroupCenter(), 3);
+        }
+
+        // Automatically move toward enemies if they are nearby
+        foreach (GameObject soldier in soldiers)
+        {
+            if (soldier == null) continue;
+
+            SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
+            if (soldierHealth != null)
+            {
+                GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
+                if (nearestEnemy != null)
+                {
+                    NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+                    if (agent != null && agent.isActiveAndEnabled)
+                    {
+                        agent.SetDestination(nearestEnemy.transform.position);
+                    }
+                }
+            }
+        }
     }
+
 }
