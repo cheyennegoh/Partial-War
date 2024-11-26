@@ -6,8 +6,8 @@ public class UnitManager : MonoBehaviour
 {
     public List<GameObject> soldiers;
     public string enemyTag;
-    public float engageRange = 10f;    // Range to start moving towards the enemy unit
-    public float attackRange = 3f;     // Range to start attacking the enemy unit
+    public float engageRange = 3f;    // Range to start moving towards the enemy unit
+    public float attackRange = 2f;     // Range to start attacking the enemy unit
 
     public Vector3 unitCenter;
     private bool anySoldierEngaged = false; // To track if any soldier is engaged
