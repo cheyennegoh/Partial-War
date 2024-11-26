@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -10,11 +11,13 @@ public class UnitManager : MonoBehaviour
     public List<GameObject> soldiers;
     public float spacing = 2f;        // Spacing between units
     public List<string> enemyTag = new List<string>();
+    public List<string> allyTag = new List<string>();
     public float engageRange = 3f;    // Range to start moving towards the enemy unit
     public float attackRange = 2f;     // Range to start attacking the enemy unit
 
     public Vector3 unitCenter;
     private bool anySoldierEngaged = false; // To track if any soldier is engaged
+    public bool isPanicked = false;
 
     private void Start()
     {
@@ -41,21 +44,27 @@ public class UnitManager : MonoBehaviour
         if (gameObject.CompareTag("RedSoldierUnit"))
         {
             enemyTag.Add("BlueSoldier");
-            enemyTag.Add("BlueCavlary");
+            enemyTag.Add("BlueCavalry");
             enemyTag.Add("BlueArcher");
+
+            allyTag.Add("RedSoldier");
+            allyTag.Add("RedCavalry");
+            allyTag.Add("RedArcher");
 
             //enemyTag = "BlueSoldier";
         }
         else if (gameObject.CompareTag("BlueSoldierUnit"))
         {
             enemyTag.Add("RedSoldier");
-            enemyTag.Add("RedCavlary");
+            enemyTag.Add("RedCavalry");
             enemyTag.Add("RedArcher");
 
+
+            allyTag.Add("BlueSoldier");
+            allyTag.Add("BlueCavalry");
+            allyTag.Add("BlueArcher");
             //enemyTag = "RedSoldier";
         }
-
-        Debug.Log("Enemy tag set to: " + enemyTag);
 
         ArrangeGridInPlace();
     }
@@ -64,46 +73,27 @@ public class UnitManager : MonoBehaviour
 
     private void Update()
     {
-        unitCenter = CalculateGroupCenter();
 
-        anySoldierEngaged = false; // Reset the engaged flag at the start of each update
-
-        // Check if any soldier is within the engagement range
-        foreach (GameObject soldier in soldiers)
+        for (int i = soldiers.Count - 1; i >= 0; i--) // Iterate backward
         {
-            if (soldier == null) continue;
-
-            SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
-            if (soldierHealth != null)
+            if (soldiers[i] == null || !soldiers[i].activeInHierarchy)
             {
-                GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
-
-                if (nearestEnemy != null)
-                {
-                    float distance = Vector3.Distance(soldier.transform.position, nearestEnemy.transform.position);
-
-                    if (distance <= attackRange)
-                    {
-                        soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
-                    }
-                    else if (distance <= engageRange)
-                    {
-                        anySoldierEngaged = true;  // Flag that at least one soldier is engaged
-
-                        // Move towards the enemy if within engagement range
-                        NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
-                        if (agent != null && agent.isActiveAndEnabled)
-                        {
-                            agent.SetDestination(nearestEnemy.transform.position);
-                        }
-                    }
-                }
+                soldiers.RemoveAt(i); // Safely remove the soldier
             }
         }
+        if (soldiers.Count == 0) 
+        { 
+            Destroy(gameObject);
+        }
 
-        // If any soldier is engaged, make all soldiers move toward their nearest enemies
-        if (anySoldierEngaged)
+        unitCenter = CalculateGroupCenter();
+        Panic(unitCenter);
+
+        if (isPanicked == false)
         {
+            anySoldierEngaged = false; // Reset the engaged flag at the start of each update
+
+            // Check if any soldier is within the engagement range
             foreach (GameObject soldier in soldiers)
             {
                 if (soldier == null) continue;
@@ -112,28 +102,67 @@ public class UnitManager : MonoBehaviour
                 if (soldierHealth != null)
                 {
                     GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
+
                     if (nearestEnemy != null)
                     {
-                        // Move all soldiers towards the nearest enemy
-                        NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
-                        if (agent != null && agent.isActiveAndEnabled)
+                        float distance = Vector3.Distance(soldier.transform.position, nearestEnemy.transform.position);
+
+                        if (distance <= attackRange)
                         {
-                            agent.SetDestination(nearestEnemy.transform.position);
+                            soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
+                        }
+                        else if (distance <= engageRange)
+                        {
+                            anySoldierEngaged = true;  // Flag that at least one soldier is engaged
+
+                            // Move towards the enemy if within engagement range
+                            NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+                            if (agent != null && agent.isActiveAndEnabled)
+                            {
+                                agent.SetDestination(nearestEnemy.transform.position);
+                            }
                         }
                     }
                 }
             }
 
-            hasArrangedAfterEngagement = false;  
-        }
-        else
-        {
-            if (!hasArrangedAfterEngagement)
+            // If any soldier is engaged, make all soldiers move toward their nearest enemies
+            if (anySoldierEngaged)
             {
-                ArrangeGrid(CalculateGroupCenter(), 3);
-                hasArrangedAfterEngagement = true; 
+                foreach (GameObject soldier in soldiers)
+                {
+                    if (soldier == null) continue;
+
+                    SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
+                    if (soldierHealth != null)
+                    {
+                        GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
+                        if (nearestEnemy != null)
+                        {
+                            // Move all soldiers towards the nearest enemy
+                            NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+                            if (agent != null && agent.isActiveAndEnabled)
+                            {
+                                agent.SetDestination(nearestEnemy.transform.position);
+                            }
+                        }
+                    }
+                }
+
+
+                hasArrangedAfterEngagement = false;
+            }
+            else
+            {
+                if (!hasArrangedAfterEngagement)
+                {
+                    ArrangeGrid(CalculateGroupCenter(), 3);
+                    hasArrangedAfterEngagement = true;
+                }
             }
         }
+
+        
     }
 
 
@@ -143,7 +172,7 @@ public class UnitManager : MonoBehaviour
     {
         if (soldier == null) return; // Check if soldier is null
         NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
-        if (agent != null)
+        if (agent != null && agent.isActiveAndEnabled)
         {
             agent.SetDestination(position);
         }
@@ -206,6 +235,90 @@ public class UnitManager : MonoBehaviour
             soldiers[i].transform.position = position;
         }
     }
+    private void Panic(Vector3 startPosition)
+    {
+        float panicRadius = 15f; // Radius to check for allies and enemies
+        float fleeRadius = 30f;
+        int enemyCount = 0;
+        int friendCount = 0;
+
+        // Check for soldiers within the radius
+        Collider[] colliders = Physics.OverlapSphere(startPosition, panicRadius);
+
+        foreach (Collider collider in colliders)
+        {
+            GameObject obj = collider.gameObject;
+
+            // Count allies (friend tags)
+            if (allyTag.Contains(obj.tag))
+            {
+                friendCount++;
+            }
+            // Count enemies (enemy tags)
+            else if (enemyTag.Contains(obj.tag))
+            {
+                enemyCount++;
+            }
+        }
+        Debug.Log("EnemyCount" + enemyCount);
+        Debug.Log("FriendCount" + friendCount);
+
+
+        // Check panic condition: enemies outnumber friends 3:1
+        if (enemyCount >= 3 * friendCount)
+        {
+            // Move soldiers away from the center of enemies
+            Vector3 fleeDirection = (startPosition - CalculateEnemiesCenter(colliders)).normalized;
+            Vector3 fleePosition = startPosition + fleeDirection * fleeRadius;
+
+            isPanicked = true;
+
+            Debug.Log("We are panicking ahhhhhhhhhhhhhhhhhh");
+            MoveFormation(fleePosition);
+
+            foreach (var soldier in soldiers)
+            {
+                if(soldier != null && soldier.activeInHierarchy)
+                {
+                    soldier.GetComponent<NavMeshAgent>().speed = 5f;
+                }
+            }
+                
+
+        }
+        else
+        {
+            foreach (var soldier in soldiers)
+            {
+                if (soldier != null && soldier.activeInHierarchy)
+                {
+                    soldier.GetComponent<NavMeshAgent>().speed = 3.5f;
+                }
+            }
+            isPanicked =false;
+        }
+    }
+
+    private Vector3 CalculateEnemiesCenter(Collider[] colliders)
+    {
+        Vector3 enemyCenter = Vector3.zero;
+        int enemyCount = 0;
+
+        foreach (Collider collider in colliders)
+        {
+            GameObject obj = collider.gameObject;
+
+            // Include only enemies in the center calculation
+            if (enemyTag.Contains(obj.tag))
+            {
+                enemyCenter += obj.transform.position;
+                enemyCount++;
+            }
+        }
+
+        return enemyCount > 0 ? enemyCenter / enemyCount : Vector3.zero;
+    }
+
 
     private Vector3 CalculateGroupCenter()
     {

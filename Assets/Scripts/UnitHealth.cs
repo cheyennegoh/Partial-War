@@ -90,13 +90,10 @@ public class UnitHealth : MonoBehaviour
     // Position the health bar above the unit and make it face the camera
     private void PositionHealthBar()
     {
-        // Check if the healthBar is null before accessing its properties
         if (healthBar == null) return;
 
-        // Get the center of the unit (group of soldiers)
         Vector3 groupCenter = CalculateGroupCenter();
 
-        // Set the health bar's position above the group center (adjust the Y value for height)
         healthBar.position = groupCenter + new Vector3(0, heightOffset, 0);
     }
 

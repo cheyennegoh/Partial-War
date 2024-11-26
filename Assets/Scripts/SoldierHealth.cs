@@ -12,6 +12,9 @@ public class SoldierHealth : MonoBehaviour
     public int health = 200;
     public int attackDamage = 10;  // Set attack damage to 10
     public float attackCooldown = 2f;
+    public bool isPanicked = false; // New flag for panic mode
+    public float normalSpeed = 3.5f; // Default NavMeshAgent speed
+    public float panicSpeed = 5f;
 
     private float lastAttackTime;
     private NavMeshAgent navMeshAgent;
@@ -34,6 +37,8 @@ public class SoldierHealth : MonoBehaviour
             enemyTag.Add("RedCavalry");
             enemyTag.Add("RedArcher");
         }
+
+
     }
 
     void Update()
