@@ -15,20 +15,17 @@ public class UnitHealth : MonoBehaviour
 
     private void Start()
     {
-        // Find all child objects tagged as "Soldier" under the current GameObject
         soldiers = new List<GameObject>();
         foreach (Transform child in transform)
         {
-            if (child.CompareTag("Soldier"))
+            if (child.CompareTag("RedSoldier") || child.CompareTag("BlueSoldier"))
             {
                 soldiers.Add(child.gameObject);
             }
         }
 
-        // Initialize the health at the start based on the soldier health values
         currentHealth = CalculateTotalHealth();
 
-        // Set the initial health of the health bar
         if (healthSlider != null)
         {
             healthSlider.maxValue = maxHealth;
@@ -64,7 +61,6 @@ public class UnitHealth : MonoBehaviour
         }
     }
 
-    // Calculate the total health by summing the health of each soldier
     private int CalculateTotalHealth()
     {
         int totalHealth = 0;
