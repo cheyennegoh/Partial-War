@@ -34,7 +34,6 @@ public class SoldierHealth : MonoBehaviour
             enemyTag.Add("RedCavalry");
             enemyTag.Add("RedArcher");
         }
-        Debug.Log(enemyTag);
     }
 
     void Update()
