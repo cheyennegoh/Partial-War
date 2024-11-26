@@ -122,6 +122,10 @@ public class UnitManager : MonoBehaviour
                 }
             }
         }
+        else
+        {
+            ArrangeGrid(CalculateGroupCenter(), 3);
+        }
     }
 
     private void SetDestination(GameObject soldier, Vector3 position)
@@ -138,16 +142,18 @@ public class UnitManager : MonoBehaviour
     {
         int cols = Mathf.CeilToInt((float)soldiers.Count / rows);
 
-        for (int i = 0; i < soldiers.Count; i++)
+        List<GameObject> activeSoldiers = soldiers.FindAll(soldier => soldier != null); // Filter out dead soldiers
+
+        for (int i = 0; i < activeSoldiers.Count; i++)
         {
             // Skip destroyed soldiers
-            if (soldiers[i] == null) continue;
+            if (activeSoldiers[i] == null) continue;
 
             int row = i / cols;
             int col = i % cols;
 
             Vector3 position = startPosition + new Vector3(col * spacing, 0, row * spacing);
-            SetDestination(soldiers[i], position);
+            SetDestination(activeSoldiers[i], position);
         }
     }
 
@@ -157,7 +163,6 @@ public class UnitManager : MonoBehaviour
 
         foreach (GameObject soldier in soldiers)
         {
-            // Skip destroyed soldiers
             if (soldier == null) continue;
 
             Vector3 offset = soldier.transform.position - groupCenter;
