@@ -1,12 +1,12 @@
-using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class SoldierHealth : MonoBehaviour
 {
     public string enemyTag;
-    public float attackRange = 1f;  // Melee 
-    public float engageRange = 5f;
+    public float attackRange = 1f;  // Melee attack range 
+    public float engageRange = 3f;  // Engagement range (move towards enemy)
 
     public int health = 200;
     public int attackDamage = 10;  // Set attack damage to 10
@@ -20,6 +20,7 @@ public class SoldierHealth : MonoBehaviour
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
 
+        // Set the enemy tag based on this soldier's team
         if (gameObject.CompareTag("RedSoldier"))
         {
             enemyTag = "BlueSoldier";
@@ -79,7 +80,7 @@ public class SoldierHealth : MonoBehaviour
         return nearestEnemy;
     }
 
-    private void Attack(GameObject enemy)
+    public void Attack(GameObject enemy)
     {
         if (Time.time - lastAttackTime >= attackCooldown)
         {
@@ -106,6 +107,7 @@ public class SoldierHealth : MonoBehaviour
     {
         Destroy(gameObject);
     }
+
     public bool IsDead()
     {
         return health <= 0;

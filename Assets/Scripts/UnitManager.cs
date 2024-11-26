@@ -1,16 +1,16 @@
 using System.Collections.Generic;
-using UnityEngine.AI;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class UnitManager : MonoBehaviour
 {
     public List<GameObject> soldiers;
     public string enemyTag;
     public float engageRange = 10f;    // Range to start moving towards the enemy unit
-    public float attackRange = 3f;    // Range to start attacking the enemy unit
-    public float attackCooldown = 2f; // Cooldown between attacks
-    private float lastAttackTime;
+    public float attackRange = 3f;     // Range to start attacking the enemy unit
+
     public Vector3 unitCenter;
+    private bool anySoldierEngaged = false; // To track if any soldier is engaged
 
     private void Start()
     {
@@ -26,7 +26,6 @@ public class UnitManager : MonoBehaviour
 
         Debug.Log("Enemy tag set to: " + enemyTag);
 
-
         // Initialize soldiers list
         soldiers = new List<GameObject>();
         foreach (Transform child in transform)
@@ -41,144 +40,66 @@ public class UnitManager : MonoBehaviour
     private void Update()
     {
         unitCenter = CalculateGroupCenter();
-        Vector3 nearestEnemyUnit = FindNearestEnemyUnit();
-        GameObject nearestEnemySoldier = FindNearestEnemySoldier();
 
-        // Check if a valid enemy soldier is found
-        if (nearestEnemySoldier != null && nearestEnemyUnit != null)
+        anySoldierEngaged = false; // Reset the engaged flag at the start of each update
+
+        // Check if any soldier is within the engagement range
+        foreach (GameObject soldier in soldiers)
         {
-            float distance = Vector3.Distance(CalculateGroupCenter(), nearestEnemySoldier.transform.position);
+            if (soldier == null) continue;
 
-            if (distance <= attackRange)
+            SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
+            if (soldierHealth != null)
             {
-                AttackEnemyUnit(nearestEnemySoldier);
-            }
-            else if (distance <= engageRange)
-            {
-                MoveFormationIndividual(nearestEnemySoldier.transform.position);
-            }
-        }
-    }
+                GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
 
-
-    private GameObject FindNearestEnemySoldier()
-    {
-        GameObject[] enemyUnits = GameObject.FindGameObjectsWithTag(enemyTag);
-        GameObject nearestEnemy = null;
-        float shortestDistance = Mathf.Infinity;
-
-        foreach (GameObject enemy in enemyUnits)
-        {
-            float distance = Vector3.Distance(CalculateGroupCenter(), enemy.transform.position);
-            if (distance < shortestDistance)
-            {
-                shortestDistance = distance;
-                nearestEnemy = enemy;
-            }
-        }
-
-        return nearestEnemy;
-    }
-
-    private Vector3 FindNearestEnemyUnit()
-    {
-        GameObject[] enemyUnits = GameObject.FindGameObjectsWithTag(enemyTag);
-        float shortestDistance = Mathf.Infinity;
-        Vector3 potentialEnemyCenter = Vector3.zero;  // To store the nearest enemy unit's center position
-
-        foreach (GameObject enemy in enemyUnits)
-        {
-            UnitManager enemyUnitManager = enemy.GetComponent<UnitManager>();
-
-            if (enemyUnitManager != null)
-            {
-                Vector3 enemyUnitCenter = enemy.transform.parent != null ? enemy.transform.parent.position : enemy.transform.position;
-
-                float distance = Vector3.Distance(transform.parent.position, enemyUnitCenter);
-
-                if (distance < shortestDistance)
+                if (nearestEnemy != null)
                 {
-                    shortestDistance = distance;
-                    potentialEnemyCenter = enemyUnitCenter;  // Update the potential enemy center
+                    float distance = Vector3.Distance(soldier.transform.position, nearestEnemy.transform.position);
+
+                    if (distance <= attackRange)
+                    {
+                        soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
+                    }
+                    else if (distance <= engageRange)
+                    {
+                        anySoldierEngaged = true;  // Flag that at least one soldier is engaged
+
+                        // Move towards the enemy if within engagement range
+                        NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+                        if (agent != null && agent.isActiveAndEnabled)
+                        {
+                            agent.SetDestination(nearestEnemy.transform.position);
+                        }
+                    }
                 }
             }
         }
 
-        return potentialEnemyCenter;  // Return the position of the nearest enemy unit's center
-    }
-
-
-
-    private void AttackEnemyUnit(GameObject enemyUnit)
-    {
-        // Iterate through this unit's soldiers and attack individual soldiers in the enemy unit
-        UnitManager enemyUnitManager = enemyUnit.GetComponent<UnitManager>();
-        if (enemyUnitManager != null)
+        // If any soldier is engaged, make all soldiers move toward their nearest enemies
+        if (anySoldierEngaged)
         {
             foreach (GameObject soldier in soldiers)
             {
                 if (soldier == null) continue;
 
-                // Find an enemy soldier to attack
-                if (enemyUnitManager.soldiers.Count > 0)
+                SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
+                if (soldierHealth != null)
                 {
-                    GameObject targetSoldier = enemyUnitManager.soldiers[0]; // Simplistic: attack the first soldier
-                    SoldierHealth targetHealth = targetSoldier.GetComponent<SoldierHealth>();
-                    if (targetHealth != null)
+                    GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
+                    if (nearestEnemy != null)
                     {
-                        targetHealth.TakeDamage(soldier.GetComponent<SoldierHealth>().attackDamage);
-                        Debug.Log(soldier.name + " attacked " + targetSoldier.name);
+                        // Move all soldiers towards the nearest enemy
+                        NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+                        if (agent != null && agent.isActiveAndEnabled)
+                        {
+                            agent.SetDestination(nearestEnemy.transform.position);
+                        }
                     }
                 }
             }
         }
     }
-
-    private void MoveFormation(Vector3 targetPosition)
-    {
-        Vector3 groupCenter = CalculateGroupCenter();
-        Debug.Log("Group center: " + groupCenter + ", Moving towards: " + targetPosition);
-
-        foreach (GameObject soldier in soldiers)
-        {
-            if (soldier == null) continue;
-
-            NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
-            if (agent != null && agent.isActiveAndEnabled)
-            {
-                Vector3 offset = soldier.transform.position - groupCenter;
-                Vector3 destination = targetPosition + offset;
-                Debug.Log(soldier.name + " moving to: " + destination);
-                agent.SetDestination(destination);
-            }
-            else
-            {
-                Debug.LogWarning(soldier.name + " does not have a valid NavMeshAgent.");
-            }
-        }
-    }
-
-    private void MoveFormationIndividual(Vector3 targetPosition)
-    {
-        foreach (GameObject soldier in soldiers)
-        {
-            if (soldier == null) continue;
-
-            NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
-            if (agent != null && agent.isActiveAndEnabled)
-            {
-                // Each soldier moves individually towards the target
-                Debug.Log(soldier.name + " moving to: " + targetPosition);
-                agent.SetDestination(targetPosition);
-            }
-            else
-            {
-                Debug.LogWarning(soldier.name + " does not have a valid NavMeshAgent.");
-            }
-        }
-    }
-
-
 
     private Vector3 CalculateGroupCenter()
     {
