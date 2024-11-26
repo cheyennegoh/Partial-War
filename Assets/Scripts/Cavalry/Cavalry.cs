@@ -3,35 +3,41 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class SoldierHealth : MonoBehaviour
+public class Cavalry : MonoBehaviour
 {
     public List<string> enemyTag = new List<string>();
     public float attackRangeSoldier = 1f;  // Melee attack range 
     public float engageRangeSoldier = 2f;  // Engagement range (move towards enemy)
 
-    public int health = 200;
-    public int attackDamage = 10;  // Set attack damage to 10
-    public float attackCooldown = 2f;
+    public int health = 150;
+    public int attackDamage = 10;  
+    
+    public float attackCooldown = 1.5f;
     public bool isPanicked = false; // New flag for panic mode
-    public float normalSpeed = 3.5f; // Default NavMeshAgent speed
-    public float panicSpeed = 5f;
+    public float normalSpeed = 5f; // Default NavMeshAgent speed
+    public float panicSpeed = 7f;
 
     private float lastAttackTime;
+    private float lastSpecialDamage;
     private NavMeshAgent navMeshAgent;
     public bool isEngaged = false;
+
+    public int chargeDamage = 30;
+    public int specialAttack = 2;
+    public float specialRecharge = 15f;
 
     void Start()
     {
 
         navMeshAgent = GetComponent<NavMeshAgent>();
 
-        if (gameObject.CompareTag("RedSoldier"))
+        if (gameObject.CompareTag("RedCavalry"))
         {
             enemyTag.Add("BlueSoldier");
             enemyTag.Add("BlueCavalry");
             enemyTag.Add("BlueArcher");
         }
-        else if (gameObject.CompareTag("BlueSoldier"))
+        else if (gameObject.CompareTag("BlueCavalry"))
         {
             enemyTag.Add("RedSoldier");
             enemyTag.Add("RedCavalry");
@@ -96,27 +102,57 @@ public class SoldierHealth : MonoBehaviour
 
     public void Attack(GameObject enemy)
     {
+        if(Time.time - lastSpecialDamage <= specialRecharge)
+        {
+            specialAttack = 2;
+        }
         if (Time.time - lastAttackTime >= attackCooldown)
         {
-            if (enemy.tag == "BlueSoldier" || enemy.tag == "RedSoldier")
+            if (enemy.tag == "BlueSoldier" || enemy.tag == "RedSoldier") 
             {
                 SoldierHealth enemySoldier = enemy.GetComponent<SoldierHealth>();
                 if (enemySoldier != null)
                 {
-                    enemySoldier.TakeDamage(attackDamage);
+                    if (specialAttack != 0)
+                    {
+                        enemySoldier.TakeDamage(chargeDamage);
+                        specialAttack -= 1;
+                        if (specialAttack == 0)
+                        {
+                            lastSpecialDamage = Time.time;
+                        }
+                    }
+                    else
+                    {
+                        enemySoldier.TakeDamage(attackDamage);
+                    }
                 }
                 lastAttackTime = Time.time;
 
             }
             if (enemy.tag == "BlueCavalry" || enemy.tag == "RedCavalry")
             {
+
                 Cavalry enemySoldier = enemy.GetComponent<Cavalry>();
                 if (enemySoldier != null)
                 {
-                    enemySoldier.TakeDamage(attackDamage);
+                    if (specialAttack != 0)
+                    {
+                        enemySoldier.TakeDamage(chargeDamage);
+                        specialAttack -= 1;
+                        if (specialAttack == 0)
+                        {
+                            lastSpecialDamage = Time.time;
+                        }
+                    }
+                    else
+                    {
+                        enemySoldier.TakeDamage(attackDamage);
+                    }
+                    lastAttackTime = Time.time;
                 }
-                lastAttackTime = Time.time;
             }
+            
         }
     }
 

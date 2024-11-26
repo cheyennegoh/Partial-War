@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UnitHealth : MonoBehaviour
+
+public class CavalryUnitHealth : MonoBehaviour
 {
     public Slider healthSlider;    // Reference to the health slider UI
     public List<GameObject> soldiers;  // List of soldier objects
-    public int maxHealth = 1800;    // Maximum health of the unit
+    public int maxHealth = 1350;    // Maximum health of the unit
     private int currentHealth;     // The current total health of all soldiers
 
     public Transform healthBar;  // Reference to the health bar Canvas (World Space)
@@ -19,7 +20,7 @@ public class UnitHealth : MonoBehaviour
         soldiers = new List<GameObject>();
         foreach (Transform child in transform)
         {
-            if (child.CompareTag("RedSoldier") || child.CompareTag("BlueSoldier"))
+            if (child.CompareTag("RedCavalry") || child.CompareTag("BlueCavalry"))
             {
                 soldiers.Add(child.gameObject);
             }
@@ -78,7 +79,7 @@ public class UnitHealth : MonoBehaviour
                 continue;  // Skip to the next soldier
             }
 
-            SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
+            Cavalry soldierHealth = soldier.GetComponent<Cavalry>();
             if (soldierHealth != null)
             {
                 totalHealth += soldierHealth.health;
