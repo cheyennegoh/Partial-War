@@ -1,187 +1,197 @@
-using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine;
 
 public class UnitManager : MonoBehaviour
 {
     public List<GameObject> soldiers;
-    public float spacing = 2f;        // Spacing between units
     public string enemyTag;
+    public float engageRange = 10f;    // Range to start moving towards the enemy unit
+    public float attackRange = 3f;    // Range to start attacking the enemy unit
+    public float attackCooldown = 2f; // Cooldown between attacks
+    private float lastAttackTime;
+    public Vector3 unitCenter;
 
-    private void SetDestination(GameObject soldier, Vector3 position)
+    private void Start()
     {
-        if (soldier == null) return; // Check if soldier is null
-        NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
-        if (agent != null)
+        // Assign enemy tag based on the unit's tag
+        if (gameObject.CompareTag("RedSoldierUnit"))
         {
-            agent.SetDestination(position);
+            enemyTag = "BlueSoldier";
         }
-    }
-
-    public void ArrangeGrid(Vector3 startPosition, int rows)
-    {
-        int cols = Mathf.CeilToInt((float)soldiers.Count / rows);
-
-        for (int i = 0; i < soldiers.Count; i++)
+        else if (gameObject.CompareTag("BlueSoldierUnit"))
         {
-            // Skip destroyed soldiers
-            if (soldiers[i] == null) continue;
-
-            int row = i / cols;
-            int col = i % cols;
-
-            Vector3 position = startPosition + new Vector3(col * spacing, 0, row * spacing);
-            SetDestination(soldiers[i], position);
-        }
-    }
-
-    private Vector3 CalculateGroupCenter()
-    {
-        if (soldiers.Count == 0) return Vector3.zero;
-
-        Vector3 center = Vector3.zero;
-        int validSoldiersCount = 0;
-
-        foreach (GameObject soldier in soldiers)
-        {
-            // Skip destroyed soldiers
-            if (soldier == null) continue;
-
-            center += soldier.transform.position;
-            validSoldiersCount++;
+            enemyTag = "RedSoldier";
         }
 
-        if (validSoldiersCount > 0)
+        Debug.Log("Enemy tag set to: " + enemyTag);
+
+
+        // Initialize soldiers list
+        soldiers = new List<GameObject>();
+        foreach (Transform child in transform)
         {
-            return center / validSoldiersCount;
-        }
-        return Vector3.zero;
-    }
-
-    public void MoveFormation(Vector3 targetPosition)
-    {
-        Vector3 groupCenter = CalculateGroupCenter();
-
-        foreach (GameObject soldier in soldiers)
-        {
-            // Skip destroyed soldiers
-            if (soldier == null) continue;
-
-            Vector3 offset = soldier.transform.position - groupCenter;
-            Vector3 destination = targetPosition + offset;
-            SetDestination(soldier, destination);
-        }
-    }
-
-    public void ArrangeGridInPlace()
-    {
-        if (soldiers.Count == 0) return;
-
-        // Calculate the group's center based on initial positions
-        Vector3 groupCenter = CalculateGroupCenter();
-        int rows = Mathf.CeilToInt(Mathf.Sqrt(soldiers.Count));
-        int cols = Mathf.CeilToInt((float)soldiers.Count / rows);
-
-        for (int i = 0; i < soldiers.Count; i++)
-        {
-            // Skip destroyed soldiers
-            if (soldiers[i] == null) continue;
-
-            int row = i / cols;
-            int col = i % cols;
-
-            // Calculate new position relative to group center
-            Vector3 position = groupCenter + new Vector3(col * spacing, 0, row * spacing);
-
-            // Update soldier's position directly without using NavMeshAgent
-            soldiers[i].transform.position = position;
-        }
-    }
-
-    public void AssignEnemyTagToSoldiers()
-    {
-        foreach (GameObject soldier in soldiers)
-        {
-            SoldierHealth soldierScript = soldier.GetComponent<SoldierHealth>();
-            if (soldierScript != null)
+            if (child.CompareTag("RedSoldier") || child.CompareTag("BlueSoldier"))
             {
-                soldierScript.enemyTag = enemyTag;
+                soldiers.Add(child.gameObject);
             }
         }
     }
 
-    void Start()
+    private void Update()
     {
-        /*if (gameObject.name.Contains("Red"))
-        {
-            enemyTag = "BlueSoldier";
-        }
-        else if (gameObject.name.Contains("Blue"))
-        {
-            enemyTag = "RedSoldier";
-        }*/
+        unitCenter = CalculateGroupCenter();
+        Vector3 nearestEnemyUnit = FindNearestEnemyUnit();
+        GameObject nearestEnemySoldier = FindNearestEnemySoldier();
 
-        enemyTag = "BlueSoldier";
-
-        AssignEnemyTagToSoldiers();
-
-        string parentName = gameObject.name;
-        GameObject redArmy = GameObject.Find(parentName);
-        if (redArmy != null)
+        // Check if a valid enemy soldier is found
+        if (nearestEnemySoldier != null && nearestEnemyUnit != null)
         {
-            //Find all the soldiers in the related Unit
-            soldiers = new List<GameObject>();
-            foreach (Transform child in redArmy.transform)
+            float distance = Vector3.Distance(CalculateGroupCenter(), nearestEnemySoldier.transform.position);
+
+            if (distance <= attackRange)
             {
-                if (child.CompareTag("Soldier"))
+                AttackEnemyUnit(nearestEnemySoldier);
+            }
+            else if (distance <= engageRange)
+            {
+                MoveFormationIndividual(nearestEnemySoldier.transform.position);
+            }
+        }
+    }
+
+
+    private GameObject FindNearestEnemySoldier()
+    {
+        GameObject[] enemyUnits = GameObject.FindGameObjectsWithTag(enemyTag);
+        GameObject nearestEnemy = null;
+        float shortestDistance = Mathf.Infinity;
+
+        foreach (GameObject enemy in enemyUnits)
+        {
+            float distance = Vector3.Distance(CalculateGroupCenter(), enemy.transform.position);
+            if (distance < shortestDistance)
+            {
+                shortestDistance = distance;
+                nearestEnemy = enemy;
+            }
+        }
+
+        return nearestEnemy;
+    }
+
+    private Vector3 FindNearestEnemyUnit()
+    {
+        GameObject[] enemyUnits = GameObject.FindGameObjectsWithTag(enemyTag);
+        float shortestDistance = Mathf.Infinity;
+        Vector3 potentialEnemyCenter = Vector3.zero;  // To store the nearest enemy unit's center position
+
+        foreach (GameObject enemy in enemyUnits)
+        {
+            UnitManager enemyUnitManager = enemy.GetComponent<UnitManager>();
+
+            if (enemyUnitManager != null)
+            {
+                Vector3 enemyUnitCenter = enemy.transform.parent != null ? enemy.transform.parent.position : enemy.transform.position;
+
+                float distance = Vector3.Distance(transform.parent.position, enemyUnitCenter);
+
+                if (distance < shortestDistance)
                 {
-                    soldiers.Add(child.gameObject);
+                    shortestDistance = distance;
+                    potentialEnemyCenter = enemyUnitCenter;  // Update the potential enemy center
                 }
             }
         }
 
-        ArrangeGridInPlace();
+        return potentialEnemyCenter;  // Return the position of the nearest enemy unit's center
     }
 
-    void Update()
+
+
+    private void AttackEnemyUnit(GameObject enemyUnit)
     {
-        // Move formation on left-click
-        if (Input.GetMouseButtonDown(0))
+        // Iterate through this unit's soldiers and attack individual soldiers in the enemy unit
+        UnitManager enemyUnitManager = enemyUnit.GetComponent<UnitManager>();
+        if (enemyUnitManager != null)
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit))
+            foreach (GameObject soldier in soldiers)
             {
-                MoveFormation(hit.point);
-            }
-        }
+                if (soldier == null) continue;
 
-        // Rearrange grid with 'G'
-        if (Input.GetKeyDown(KeyCode.G))
-        {
-            ArrangeGrid(CalculateGroupCenter(), 3);
-        }
-
-        // Automatically move toward enemies if they are nearby
-        foreach (GameObject soldier in soldiers)
-        {
-            if (soldier == null) continue;
-
-            SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
-            if (soldierHealth != null)
-            {
-                GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
-                if (nearestEnemy != null)
+                // Find an enemy soldier to attack
+                if (enemyUnitManager.soldiers.Count > 0)
                 {
-                    NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
-                    if (agent != null && agent.isActiveAndEnabled)
+                    GameObject targetSoldier = enemyUnitManager.soldiers[0]; // Simplistic: attack the first soldier
+                    SoldierHealth targetHealth = targetSoldier.GetComponent<SoldierHealth>();
+                    if (targetHealth != null)
                     {
-                        agent.SetDestination(nearestEnemy.transform.position);
+                        targetHealth.TakeDamage(soldier.GetComponent<SoldierHealth>().attackDamage);
+                        Debug.Log(soldier.name + " attacked " + targetSoldier.name);
                     }
                 }
             }
         }
     }
 
+    private void MoveFormation(Vector3 targetPosition)
+    {
+        Vector3 groupCenter = CalculateGroupCenter();
+        Debug.Log("Group center: " + groupCenter + ", Moving towards: " + targetPosition);
+
+        foreach (GameObject soldier in soldiers)
+        {
+            if (soldier == null) continue;
+
+            NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+            if (agent != null && agent.isActiveAndEnabled)
+            {
+                Vector3 offset = soldier.transform.position - groupCenter;
+                Vector3 destination = targetPosition + offset;
+                Debug.Log(soldier.name + " moving to: " + destination);
+                agent.SetDestination(destination);
+            }
+            else
+            {
+                Debug.LogWarning(soldier.name + " does not have a valid NavMeshAgent.");
+            }
+        }
+    }
+
+    private void MoveFormationIndividual(Vector3 targetPosition)
+    {
+        foreach (GameObject soldier in soldiers)
+        {
+            if (soldier == null) continue;
+
+            NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+            if (agent != null && agent.isActiveAndEnabled)
+            {
+                // Each soldier moves individually towards the target
+                Debug.Log(soldier.name + " moving to: " + targetPosition);
+                agent.SetDestination(targetPosition);
+            }
+            else
+            {
+                Debug.LogWarning(soldier.name + " does not have a valid NavMeshAgent.");
+            }
+        }
+    }
+
+
+
+    private Vector3 CalculateGroupCenter()
+    {
+        if (soldiers.Count == 0) return transform.position;
+
+        Vector3 center = Vector3.zero;
+        foreach (GameObject soldier in soldiers)
+        {
+            if (soldier != null)
+            {
+                center += soldier.transform.position;
+            }
+        }
+        return center / soldiers.Count;
+    }
 }

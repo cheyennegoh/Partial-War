@@ -5,21 +5,29 @@ using UnityEngine.AI;
 public class SoldierHealth : MonoBehaviour
 {
     public string enemyTag;
-    public float attackRange = 1f;  // Melee range
-    public float detectRange = 10f; // Detection range
-    public int health = 100;
+    public float attackRange = 1f;  // Melee 
+    public float engageRange = 5f;
+
+    public int health = 200;
     public int attackDamage = 10;  // Set attack damage to 10
-    public float attackCooldown = 1f;
+    public float attackCooldown = 2f;
 
     private float lastAttackTime;
     private NavMeshAgent navMeshAgent;
+    public bool isEngaged = false;
 
     void Start()
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
 
-        //enemyTag = gameObject.name.Contains("Red") ? "BlueSoldier" : "RedSoldier";
-        enemyTag = "BlueSoldier";
+        if (gameObject.CompareTag("RedSoldier"))
+        {
+            enemyTag = "BlueSoldier";
+        }
+        else if (gameObject.CompareTag("BlueSoldier"))
+        {
+            enemyTag = "RedSoldier";
+        }
     }
 
     void Update()
@@ -39,7 +47,7 @@ public class SoldierHealth : MonoBehaviour
                 }
                 Attack(nearestEnemy);
             }
-            else if (distance <= detectRange)
+            else if (distance <= engageRange)
             {
                 // Move toward the enemy if within detection range but outside attack range
                 if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
@@ -97,6 +105,10 @@ public class SoldierHealth : MonoBehaviour
     private void Die()
     {
         Destroy(gameObject);
+    }
+    public bool IsDead()
+    {
+        return health <= 0;
     }
 }
 
