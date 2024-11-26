@@ -6,7 +6,7 @@ public class SoldierHealth : MonoBehaviour
 {
     public string enemyTag;
     public float attackRange = 1f;  // Melee attack range 
-    public float engageRange = 3f;  // Engagement range (move towards enemy)
+    public float engageRange = 5f;  // Engagement range (move towards enemy)
 
     public int health = 200;
     public int attackDamage = 10;  // Set attack damage to 10
