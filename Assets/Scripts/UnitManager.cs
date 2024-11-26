@@ -5,7 +5,7 @@ using UnityEngine.AI;
 public class UnitManager : MonoBehaviour
 {
     public List<GameObject> soldiers;
-    public string enemyTag;
+    public List<string> enemyTag;
     public float engageRange = 3f;    // Range to start moving towards the enemy unit
     public float attackRange = 2f;     // Range to start attacking the enemy unit
     public float spacing = 2f;
@@ -18,11 +18,19 @@ public class UnitManager : MonoBehaviour
         // Assign enemy tag based on the unit's tag
         if (gameObject.CompareTag("RedSoldierUnit"))
         {
-            enemyTag = "BlueSoldier";
+            enemyTag.Add("BlueSoldier");
+            enemyTag.Add("BlueCavlary");
+            enemyTag.Add("BlueArcher");
+
+            //enemyTag = "BlueSoldier";
         }
         else if (gameObject.CompareTag("BlueSoldierUnit"))
         {
-            enemyTag = "RedSoldier";
+            enemyTag.Add("RedSoldier");
+            enemyTag.Add("RedCavlary");
+            enemyTag.Add("RedArcher");
+
+            //enemyTag = "RedSoldier";
         }
 
         Debug.Log("Enemy tag set to: " + enemyTag);

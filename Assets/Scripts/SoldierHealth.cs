@@ -1,10 +1,11 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class SoldierHealth : MonoBehaviour
 {
-    public string enemyTag;
+    public List<string> enemyTag = new List<string>();
     public float attackRange = 1f;  // Melee attack range 
     public float engageRange = 2f;  // Engagement range (move towards enemy)
 
@@ -18,17 +19,22 @@ public class SoldierHealth : MonoBehaviour
 
     void Start()
     {
+
         navMeshAgent = GetComponent<NavMeshAgent>();
 
-        // Set the enemy tag based on this soldier's team
         if (gameObject.CompareTag("RedSoldier"))
         {
-            enemyTag = "BlueSoldier";
+            enemyTag.Add("BlueSoldier");
+            enemyTag.Add("BlueCavalry");
+            enemyTag.Add("BlueArcher");
         }
         else if (gameObject.CompareTag("BlueSoldier"))
         {
-            enemyTag = "RedSoldier";
+            enemyTag.Add("RedSoldier");
+            enemyTag.Add("RedCavalry");
+            enemyTag.Add("RedArcher");
         }
+        Debug.Log(enemyTag);
     }
 
     void Update()
@@ -61,19 +67,23 @@ public class SoldierHealth : MonoBehaviour
 
     public GameObject FindNearestEnemy()
     {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag(enemyTag);
         GameObject nearestEnemy = null;
         float shortestDistance = Mathf.Infinity;
 
-        foreach (GameObject enemy in enemies)
+        foreach (string tag in enemyTag)
         {
-            if (enemy == null) continue;
+            GameObject[] enemies = GameObject.FindGameObjectsWithTag(tag);
 
-            float distance = Vector3.Distance(transform.position, enemy.transform.position);
-            if (distance < shortestDistance)
+            foreach (GameObject enemy in enemies)
             {
-                shortestDistance = distance;
-                nearestEnemy = enemy;
+                if (enemy == null) continue;
+
+                float distance = Vector3.Distance(transform.position, enemy.transform.position);
+                if (distance < shortestDistance)
+                {
+                    shortestDistance = distance;
+                    nearestEnemy = enemy;
+                }
             }
         }
 
