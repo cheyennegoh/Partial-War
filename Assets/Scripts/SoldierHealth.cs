@@ -122,4 +122,3 @@ public class SoldierHealth : MonoBehaviour
         return health <= 0;
     }
 }
-

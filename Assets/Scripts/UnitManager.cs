@@ -4,18 +4,40 @@ using UnityEngine.AI;
 
 public class UnitManager : MonoBehaviour
 {
+    [SerializeField]
+    GameObject prefabCapsule;
+    
     public List<GameObject> soldiers;
-    public List<string> enemyTag;
+    public float spacing = 2f;        // Spacing between units
+    public List<string> enemyTag = new List<string>();
     public float engageRange = 3f;    // Range to start moving towards the enemy unit
     public float attackRange = 2f;     // Range to start attacking the enemy unit
-    public float spacing = 2f;
 
     public Vector3 unitCenter;
     private bool anySoldierEngaged = false; // To track if any soldier is engaged
 
     private void Start()
     {
-        // Assign enemy tag based on the unit's tag
+        // Initialize soldiers list
+        for (int i = 0; i < 9; i++)
+        {
+            GameObject soldier = Instantiate<GameObject>(prefabCapsule, transform);
+            Renderer rend = soldier.GetComponent<Renderer>();
+
+            if (gameObject.CompareTag("RedSoldierUnit"))
+            {
+                soldier.tag = "RedSoldier";
+                rend.material.color = Color.red;
+            }
+            else if (gameObject.CompareTag("BlueSoldierUnit"))
+            {
+                soldier.tag = "BlueSoldier";
+                rend.material.color = Color.blue;
+            }
+
+            soldiers.Add(soldier);
+        }
+
         if (gameObject.CompareTag("RedSoldierUnit"))
         {
             enemyTag.Add("BlueSoldier");
@@ -35,15 +57,6 @@ public class UnitManager : MonoBehaviour
 
         Debug.Log("Enemy tag set to: " + enemyTag);
 
-        // Initialize soldiers list
-        soldiers = new List<GameObject>();
-        foreach (Transform child in transform)
-        {
-            if (child.CompareTag("RedSoldier") || child.CompareTag("BlueSoldier"))
-            {
-                soldiers.Add(child.gameObject);
-            }
-        }
         ArrangeGridInPlace();
     }
 
@@ -111,12 +124,25 @@ public class UnitManager : MonoBehaviour
         }
     }
 
+    private void SetDestination(GameObject soldier, Vector3 position)
+    {
+        if (soldier == null) return; // Check if soldier is null
+        NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+        if (agent != null)
+        {
+            agent.SetDestination(position);
+        }
+    }
+
     public void ArrangeGrid(Vector3 startPosition, int rows)
     {
         int cols = Mathf.CeilToInt((float)soldiers.Count / rows);
 
         for (int i = 0; i < soldiers.Count; i++)
         {
+            // Skip destroyed soldiers
+            if (soldiers[i] == null) continue;
+
             int row = i / cols;
             int col = i % cols;
 
@@ -124,6 +150,22 @@ public class UnitManager : MonoBehaviour
             SetDestination(soldiers[i], position);
         }
     }
+
+    public void MoveFormation(Vector3 targetPosition)
+    {
+        Vector3 groupCenter = CalculateGroupCenter();
+
+        foreach (GameObject soldier in soldiers)
+        {
+            // Skip destroyed soldiers
+            if (soldier == null) continue;
+
+            Vector3 offset = soldier.transform.position - groupCenter;
+            Vector3 destination = targetPosition + offset;
+            SetDestination(soldier, destination);
+        }
+    }
+
     public void ArrangeGridInPlace()
     {
         if (soldiers.Count == 0) return;
@@ -135,6 +177,9 @@ public class UnitManager : MonoBehaviour
 
         for (int i = 0; i < soldiers.Count; i++)
         {
+            // Skip destroyed soldiers
+            if (soldiers[i] == null) continue;
+
             int row = i / cols;
             int col = i % cols;
 
@@ -143,14 +188,6 @@ public class UnitManager : MonoBehaviour
 
             // Update soldier's position directly without using NavMeshAgent
             soldiers[i].transform.position = position;
-        }
-    }
-    private void SetDestination(GameObject soldier, Vector3 position)
-    {
-        NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
-        if (agent != null)
-        {
-            agent.SetDestination(position);
         }
     }
 
