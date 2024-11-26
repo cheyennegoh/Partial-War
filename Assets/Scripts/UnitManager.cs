@@ -10,7 +10,7 @@ public class UnitManager : MonoBehaviour
     public List<GameObject> soldiers;
     public float spacing = 2f;        // Spacing between units
     public List<string> enemyTag = new List<string>();
-    public float engageRange = 3f;    
+    public float engageRange = 3f;    // Range to start moving towards the enemy unit
     public float attackRange = 2f;     // Range to start attacking the enemy unit
 
     public Vector3 unitCenter;
@@ -54,6 +54,8 @@ public class UnitManager : MonoBehaviour
 
             //enemyTag = "RedSoldier";
         }
+
+        Debug.Log("Enemy tag set to: " + enemyTag);
 
         ArrangeGridInPlace();
     }
@@ -122,20 +124,15 @@ public class UnitManager : MonoBehaviour
                 }
             }
 
-            hasArrangedAfterEngagement = false;  // Reset flag while soldiers are engaged
+            hasArrangedAfterEngagement = false;  
         }
         else
         {
-            // Call ArrangeGrid only once after all engagement is finished
             if (!hasArrangedAfterEngagement)
             {
                 ArrangeGrid(CalculateGroupCenter(), 3);
-                hasArrangedAfterEngagement = true;  // Set flag to prevent multiple calls
+                hasArrangedAfterEngagement = true; 
             }
-        }
-        else 
-        {
-            ArrangeGrid(CalculateGroupCenter(), 3);
         }
     }
 
