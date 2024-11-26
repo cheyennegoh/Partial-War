@@ -1,13 +1,13 @@
+using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class UnitManager : MonoBehaviour
+public class CavalryUnitManager : MonoBehaviour
 {
     [SerializeField]
     GameObject prefabCapsule;
-    
+
     public List<GameObject> soldiers;
     public float spacing = 2f;        // Spacing between units
     public List<string> enemyTag = new List<string>();
@@ -27,21 +27,21 @@ public class UnitManager : MonoBehaviour
             GameObject soldier = Instantiate<GameObject>(prefabCapsule, transform);
             Renderer rend = soldier.GetComponent<Renderer>();
 
-            if (gameObject.CompareTag("RedSoldierUnit"))
+            if (gameObject.CompareTag("RedCavalryUnit"))
             {
-                soldier.tag = "RedSoldier";
+                soldier.tag = "RedCavalry";
                 rend.material.color = Color.red;
             }
-            else if (gameObject.CompareTag("BlueSoldierUnit"))
+            else if (gameObject.CompareTag("BlueCavalryUnit"))
             {
-                soldier.tag = "BlueSoldier";
+                soldier.tag = "BlueCavalry";
                 rend.material.color = Color.blue;
             }
 
             soldiers.Add(soldier);
         }
 
-        if (gameObject.CompareTag("RedSoldierUnit"))
+        if (gameObject.CompareTag("RedCavalryUnit"))
         {
             enemyTag.Add("BlueSoldier");
             enemyTag.Add("BlueCavalry");
@@ -53,7 +53,7 @@ public class UnitManager : MonoBehaviour
 
             //enemyTag = "BlueSoldier";
         }
-        else if (gameObject.CompareTag("BlueSoldierUnit"))
+        else if (gameObject.CompareTag("BlueCavalryUnit"))
         {
             enemyTag.Add("RedSoldier");
             enemyTag.Add("RedCavalry");
@@ -81,8 +81,8 @@ public class UnitManager : MonoBehaviour
                 soldiers.RemoveAt(i); // Safely remove the soldier
             }
         }
-        if (soldiers.Count == 0) 
-        { 
+        if (soldiers.Count == 0)
+        {
             Destroy(gameObject);
         }
 
@@ -98,7 +98,7 @@ public class UnitManager : MonoBehaviour
             {
                 if (soldier == null) continue;
 
-                SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
+                Cavalry soldierHealth = soldier.GetComponent<Cavalry>();
                 if (soldierHealth != null)
                 {
                     GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
@@ -133,7 +133,7 @@ public class UnitManager : MonoBehaviour
                 {
                     if (soldier == null) continue;
 
-                    SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
+                    Cavalry soldierHealth = soldier.GetComponent<Cavalry>();
                     if (soldierHealth != null)
                     {
                         GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
@@ -162,7 +162,7 @@ public class UnitManager : MonoBehaviour
             }
         }
 
-        
+
     }
 
 
@@ -276,12 +276,12 @@ public class UnitManager : MonoBehaviour
 
             foreach (var soldier in soldiers)
             {
-                if(soldier != null && soldier.activeInHierarchy)
+                if (soldier != null && soldier.activeInHierarchy)
                 {
                     soldier.GetComponent<NavMeshAgent>().speed = 5f;
                 }
             }
-                
+
 
         }
         else
@@ -293,7 +293,7 @@ public class UnitManager : MonoBehaviour
                     soldier.GetComponent<NavMeshAgent>().speed = 3.5f;
                 }
             }
-            isPanicked =false;
+            isPanicked = false;
         }
     }
 
@@ -327,7 +327,7 @@ public class UnitManager : MonoBehaviour
 
         foreach (GameObject soldier in soldiers)
         {
-            if (soldier != null && soldier.activeInHierarchy)  
+            if (soldier != null && soldier.activeInHierarchy)
             {
                 center += soldier.transform.position;
                 activeSoldiersCount++;
@@ -337,5 +337,4 @@ public class UnitManager : MonoBehaviour
         if (activeSoldiersCount == 0) return transform.position;
         return center / activeSoldiersCount;
     }
-
 }
