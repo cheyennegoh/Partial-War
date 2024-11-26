@@ -10,7 +10,7 @@ public class UnitManager : MonoBehaviour
     public List<GameObject> soldiers;
     public float spacing = 2f;        // Spacing between units
     public List<string> enemyTag = new List<string>();
-    public float engageRange = 3f;    // Range to start moving towards the enemy unit
+    public float engageRange = 3f;    
     public float attackRange = 2f;     // Range to start attacking the enemy unit
 
     public Vector3 unitCenter;
@@ -55,10 +55,10 @@ public class UnitManager : MonoBehaviour
             //enemyTag = "RedSoldier";
         }
 
-        Debug.Log("Enemy tag set to: " + enemyTag);
-
         ArrangeGridInPlace();
     }
+
+    private bool hasArrangedAfterEngagement = false;  // Flag to ensure ArrangeGrid is called only once after engagement
 
     private void Update()
     {
@@ -121,12 +121,26 @@ public class UnitManager : MonoBehaviour
                     }
                 }
             }
+
+            hasArrangedAfterEngagement = false;  // Reset flag while soldiers are engaged
         }
         else
+        {
+            // Call ArrangeGrid only once after all engagement is finished
+            if (!hasArrangedAfterEngagement)
+            {
+                ArrangeGrid(CalculateGroupCenter(), 3);
+                hasArrangedAfterEngagement = true;  // Set flag to prevent multiple calls
+            }
+        }
+        else 
         {
             ArrangeGrid(CalculateGroupCenter(), 3);
         }
     }
+
+
+
 
     private void SetDestination(GameObject soldier, Vector3 position)
     {
@@ -201,13 +215,19 @@ public class UnitManager : MonoBehaviour
         if (soldiers.Count == 0) return transform.position;
 
         Vector3 center = Vector3.zero;
+        int activeSoldiersCount = 0;
+
         foreach (GameObject soldier in soldiers)
         {
-            if (soldier != null)
+            if (soldier != null && soldier.activeInHierarchy)  
             {
                 center += soldier.transform.position;
+                activeSoldiersCount++;
             }
         }
-        return center / soldiers.Count;
+
+        if (activeSoldiersCount == 0) return transform.position;
+        return center / activeSoldiersCount;
     }
+
 }

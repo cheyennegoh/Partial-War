@@ -6,8 +6,8 @@ using UnityEngine.AI;
 public class SoldierHealth : MonoBehaviour
 {
     public List<string> enemyTag = new List<string>();
-    public float attackRange = 1f;  // Melee attack range 
-    public float engageRange = 2f;  // Engagement range (move towards enemy)
+    public float attackRangeSoldier = 1f;  // Melee attack range 
+    public float engageRangeSoldier = 2f;  // Engagement range (move towards enemy)
 
     public int health = 200;
     public int attackDamage = 10;  // Set attack damage to 10
@@ -44,7 +44,7 @@ public class SoldierHealth : MonoBehaviour
         {
             float distance = Vector3.Distance(transform.position, nearestEnemy.transform.position);
 
-            if (distance <= attackRange)
+            if (distance <= attackRangeSoldier)
             {
                 // Stop moving and attack the enemy
                 if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
@@ -53,7 +53,7 @@ public class SoldierHealth : MonoBehaviour
                 }
                 Attack(nearestEnemy);
             }
-            else if (distance <= engageRange)
+            else if (distance <= engageRangeSoldier)
             {
                 // Move toward the enemy if within detection range but outside attack range
                 if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
