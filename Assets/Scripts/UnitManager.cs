@@ -8,6 +8,7 @@ public class UnitManager : MonoBehaviour
     public string enemyTag;
     public float engageRange = 3f;    // Range to start moving towards the enemy unit
     public float attackRange = 2f;     // Range to start attacking the enemy unit
+    public float spacing = 2f;
 
     public Vector3 unitCenter;
     private bool anySoldierEngaged = false; // To track if any soldier is engaged
@@ -35,6 +36,7 @@ public class UnitManager : MonoBehaviour
                 soldiers.Add(child.gameObject);
             }
         }
+        ArrangeGridInPlace();
     }
 
     private void Update()
@@ -98,6 +100,49 @@ public class UnitManager : MonoBehaviour
                     }
                 }
             }
+        }
+    }
+
+    public void ArrangeGrid(Vector3 startPosition, int rows)
+    {
+        int cols = Mathf.CeilToInt((float)soldiers.Count / rows);
+
+        for (int i = 0; i < soldiers.Count; i++)
+        {
+            int row = i / cols;
+            int col = i % cols;
+
+            Vector3 position = startPosition + new Vector3(col * spacing, 0, row * spacing);
+            SetDestination(soldiers[i], position);
+        }
+    }
+    public void ArrangeGridInPlace()
+    {
+        if (soldiers.Count == 0) return;
+
+        // Calculate the group's center based on initial positions
+        Vector3 groupCenter = CalculateGroupCenter();
+        int rows = Mathf.CeilToInt(Mathf.Sqrt(soldiers.Count));
+        int cols = Mathf.CeilToInt((float)soldiers.Count / rows);
+
+        for (int i = 0; i < soldiers.Count; i++)
+        {
+            int row = i / cols;
+            int col = i % cols;
+
+            // Calculate new position relative to group center
+            Vector3 position = groupCenter + new Vector3(col * spacing, 0, row * spacing);
+
+            // Update soldier's position directly without using NavMeshAgent
+            soldiers[i].transform.position = position;
+        }
+    }
+    private void SetDestination(GameObject soldier, Vector3 position)
+    {
+        NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+        if (agent != null)
+        {
+            agent.SetDestination(position);
         }
     }
 
