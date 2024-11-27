@@ -11,9 +11,11 @@ public class CavalryUnitHealth : MonoBehaviour
     public int maxHealth = 1350;    // Maximum health of the unit
     private int currentHealth;     // The current total health of all soldiers
 
-    public Transform healthBar;  // Reference to the health bar Canvas (World Space)
+    public Transform healthBar;  // Reference to the health bar Canvas 
+    public Image bannerIcon;
     public float heightOffset = 2f;  // Offset to position health bar above the unit
-
+    public float bannerOffset = 0.5f;
+    public float bannerOppacity = 0.8f;
     private void Start()
     {
         healthSlider.maxValue = maxHealth;
@@ -34,13 +36,13 @@ public class CavalryUnitHealth : MonoBehaviour
             healthSlider.value = currentHealth;
         }
 
-        // Position the health bar above the unit (group of soldiers)
+        SetBannerOpacity(bannerOppacity);
         PositionHealthBar();
+
     }
 
     private void Update()
     {
-        // Recalculate the total health in case any soldier's health has changed
         currentHealth = CalculateTotalHealth();
 
         // Update the health slider if needed
@@ -49,11 +51,10 @@ public class CavalryUnitHealth : MonoBehaviour
             healthSlider.value = currentHealth;
         }
 
-        // Position the health bar above the unit in the world
-        // Only position the health bar if it's still present
         if (healthBar != null)
         {
             PositionHealthBar();
+            PositionBannerIcon();
         }
 
         // If no soldiers are left or the unit's health is zero, remove the health bar
@@ -67,16 +68,14 @@ public class CavalryUnitHealth : MonoBehaviour
     {
         int totalHealth = 0;
 
-        // Iterate over all soldiers, skipping any that have been destroyed
-        for (int i = soldiers.Count - 1; i >= 0; i--)  // Loop backward to safely remove elements
+        for (int i = soldiers.Count - 1; i >= 0; i--)  
         {
             GameObject soldier = soldiers[i];
 
-            // If soldier is destroyed, remove it from the list
             if (soldier == null)
             {
                 soldiers.RemoveAt(i);
-                continue;  // Skip to the next soldier
+                continue;  
             }
 
             Cavalry soldierHealth = soldier.GetComponent<Cavalry>();
@@ -99,7 +98,22 @@ public class CavalryUnitHealth : MonoBehaviour
         healthBar.position = groupCenter + new Vector3(0, heightOffset, 0);
     }
 
-    // Calculate the group's center based on the soldiers' positions
+    private void PositionBannerIcon()
+    {
+        if (bannerIcon == null || healthBar == null) return;
+
+        bannerIcon.transform.position = healthBar.position + new Vector3(0, bannerOffset, 0);
+    }
+    private void SetBannerOpacity(float opacity)
+    {
+        if (bannerIcon != null)
+        {
+            Color color = bannerIcon.color;      
+            color.a = opacity;                    
+            bannerIcon.color = color;            
+        }
+    }
+
     private Vector3 CalculateGroupCenter()
     {
         if (soldiers.Count == 0) return transform.position;
@@ -112,15 +126,11 @@ public class CavalryUnitHealth : MonoBehaviour
         return center / soldiers.Count;
     }
 
-    // Remove the health bar when the unit has no soldiers or health
     private void RemoveHealthBar()
     {
-        // Only try to remove the health bar if it exists
         if (healthBar != null)
         {
-            // Destroy the health bar or deactivate it based on your needs
-            Destroy(healthBar.gameObject);  // If you want to destroy it
-            // healthBar.gameObject.SetActive(false);  // If you want to deactivate it instead
+            Destroy(healthBar.gameObject);  
         }
     }
 }

@@ -6,12 +6,15 @@ using UnityEngine.UI;
 public class UnitHealth : MonoBehaviour
 {
     public Slider healthSlider;    // Reference to the health slider UI
-    public List<GameObject> soldiers;  // List of soldier objects
+    public List<GameObject> soldiers;
     public int maxHealth = 1800;    // Maximum health of the unit
     private int currentHealth;     // The current total health of all soldiers
 
-    public Transform healthBar;  // Reference to the health bar Canvas (World Space)
+    public Transform healthBar;  // Reference to the health bar Canvas
+    public Image bannerIcon;
     public float heightOffset = 2f;  // Offset to position health bar above the unit
+    public float bannerOffset = 0.5f;
+    public float bannerOppacity = 0.8f;
 
     private void Start()
     {
@@ -33,7 +36,7 @@ public class UnitHealth : MonoBehaviour
             healthSlider.value = currentHealth;
         }
 
-        // Position the health bar above the unit (group of soldiers)
+        SetBannerOpacity(bannerOppacity);
         PositionHealthBar();
     }
 
@@ -48,17 +51,16 @@ public class UnitHealth : MonoBehaviour
             healthSlider.value = currentHealth;
         }
 
-        // Position the health bar above the unit in the world
-        // Only position the health bar if it's still present
         if (healthBar != null)
         {
             PositionHealthBar();
+            PositionBannerIcon();
         }
 
-        // If no soldiers are left or the unit's health is zero, remove the health bar
         if (soldiers.Count == 0 || currentHealth <= 0)
         {
             RemoveHealthBar();
+
         }
     }
 
@@ -75,7 +77,7 @@ public class UnitHealth : MonoBehaviour
             if (soldier == null)
             {
                 soldiers.RemoveAt(i);
-                continue;  // Skip to the next soldier
+                continue;
             }
 
             SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
@@ -98,7 +100,22 @@ public class UnitHealth : MonoBehaviour
         healthBar.position = groupCenter + new Vector3(0, heightOffset, 0);
     }
 
-    // Calculate the group's center based on the soldiers' positions
+    private void PositionBannerIcon()
+    {
+        if (bannerIcon == null || healthBar == null) return;
+
+        bannerIcon.transform.position = healthBar.position + new Vector3(0, bannerOffset, 0);
+    }
+    private void SetBannerOpacity(float opacity)
+    {
+        if (bannerIcon != null)
+        {
+            Color color = bannerIcon.color;
+            color.a = opacity;
+            bannerIcon.color = color;
+        }
+    }
+
     private Vector3 CalculateGroupCenter()
     {
         if (soldiers.Count == 0) return transform.position;
@@ -111,15 +128,11 @@ public class UnitHealth : MonoBehaviour
         return center / soldiers.Count;
     }
 
-    // Remove the health bar when the unit has no soldiers or health
     private void RemoveHealthBar()
     {
-        // Only try to remove the health bar if it exists
         if (healthBar != null)
         {
-            // Destroy the health bar or deactivate it based on your needs
-            Destroy(healthBar.gameObject);  // If you want to destroy it
-            // healthBar.gameObject.SetActive(false);  // If you want to deactivate it instead
+            Destroy(healthBar.gameObject);
         }
     }
 }
