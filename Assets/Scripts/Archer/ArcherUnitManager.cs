@@ -101,7 +101,7 @@ public class ArcherUnitManager : MonoBehaviour
             {
                 if (soldier == null) continue;
 
-                ArcherHealth soldierHealth = soldier.GetComponent<ArcherHealth>();
+                Archer soldierHealth = soldier.GetComponent<Archer>();
                 if (soldierHealth != null)
                 {
                     GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
@@ -112,7 +112,7 @@ public class ArcherUnitManager : MonoBehaviour
 
                         if (distance <= attackRange)
                         {
-                            soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
+                            //soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
                         }
                         else if (distance <= engageRange)
                         {
@@ -136,7 +136,7 @@ public class ArcherUnitManager : MonoBehaviour
                 {
                     if (soldier == null) continue;
 
-                    ArcherHealth soldierHealth = soldier.GetComponent<ArcherHealth>();
+                    Archer soldierHealth = soldier.GetComponent<Archer>();
                     if (soldierHealth != null)
                     {
                         GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
@@ -167,9 +167,6 @@ public class ArcherUnitManager : MonoBehaviour
 
         
     }
-
-
-
 
     private void SetDestination(GameObject soldier, Vector3 position)
     {

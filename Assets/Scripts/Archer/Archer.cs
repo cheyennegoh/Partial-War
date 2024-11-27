@@ -3,14 +3,20 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class ArcherHealth : MonoBehaviour
+public class Archer : MonoBehaviour
 {
+    [SerializeField]
+    GameObject prefabArrow;
+
+    public float arrowVelocity = 700f;
+    private float elapsedSeconds = 0f;
+
     public List<string> enemyTag = new List<string>();
     public float attackRangeSoldier = 1f;  // Melee attack range 
-    public float engageRangeSoldier = 2f;  // Engagement range (move towards enemy)
+    public float engageRangeSoldier = 20f;  // Engagement range (move towards enemy)
 
     public int health = 200;
-    public int attackDamage = 10;  // Set attack damage to 10
+    //public int attackDamage = 10;  // Set attack damage to 10
     public float attackCooldown = 2f;
     public bool isPanicked = false; // New flag for panic mode
     public float normalSpeed = 3.5f; // Default NavMeshAgent speed
@@ -56,7 +62,7 @@ public class ArcherHealth : MonoBehaviour
                 {
                     navMeshAgent.SetDestination(transform.position); // Stop the agent
                 }
-                Attack(nearestEnemy);
+                ShootBow();
             }
             else if (distance <= engageRangeSoldier)
             {
@@ -94,40 +100,40 @@ public class ArcherHealth : MonoBehaviour
         return nearestEnemy;
     }
 
-    public void Attack(GameObject enemy)
-    {
-        if (Time.time - lastAttackTime >= attackCooldown)
-        {
-            if (enemy.tag == "BlueSoldier" || enemy.tag == "RedSoldier")
-            {
-                SoldierHealth enemySoldier = enemy.GetComponent<SoldierHealth>();
-                if (enemySoldier != null)
-                {
-                    enemySoldier.TakeDamage(attackDamage);
-                }
-                lastAttackTime = Time.time;
+    //public void Attack(GameObject enemy)
+    //{
+    //    if (Time.time - lastAttackTime >= attackCooldown)
+    //    {
+    //        if (enemy.tag == "BlueSoldier" || enemy.tag == "RedSoldier")
+    //        {
+    //            SoldierHealth enemySoldier = enemy.GetComponent<SoldierHealth>();
+    //            if (enemySoldier != null)
+    //            {
+    //                enemySoldier.TakeDamage(attackDamage);
+    //            }
+    //            lastAttackTime = Time.time;
 
-            }
-            if (enemy.tag == "BlueCavalry" || enemy.tag == "RedCavalry")
-            {
-                Cavalry enemySoldier = enemy.GetComponent<Cavalry>();
-                if (enemySoldier != null)
-                {
-                    enemySoldier.TakeDamage(attackDamage);
-                }
-                lastAttackTime = Time.time;
-            }
-            //if (enemy.tag == "BlueArcher" || enemy.tag == "RedArcher")
-            //{
-            //    Archer enemySoldier = enemy.GetComponent<Archer>();
-            //    if (enemySoldier != null)
-            //    {
-            //        enemySoldier.TakeDamage(attackDamage);
-            //    }
-            //    lastAttackTime = Time.time;
-            //}
-        }
-    }
+    //        }
+    //        if (enemy.tag == "BlueCavalry" || enemy.tag == "RedCavalry")
+    //        {
+    //            Cavalry enemySoldier = enemy.GetComponent<Cavalry>();
+    //            if (enemySoldier != null)
+    //            {
+    //                enemySoldier.TakeDamage(attackDamage);
+    //            }
+    //            lastAttackTime = Time.time;
+    //        }
+    //        //if (enemy.tag == "BlueArcher" || enemy.tag == "RedArcher")
+    //        //{
+    //        //    Archer enemySoldier = enemy.GetComponent<Archer>();
+    //        //    if (enemySoldier != null)
+    //        //    {
+    //        //        enemySoldier.TakeDamage(attackDamage);
+    //        //    }
+    //        //    lastAttackTime = Time.time;
+    //        //}
+    //    }
+    //}
 
     public void TakeDamage(int damage)
     {
@@ -146,5 +152,22 @@ public class ArcherHealth : MonoBehaviour
     public bool IsDead()
     {
         return health <= 0;
+    }
+
+    public void ShootBow()
+    {
+        elapsedSeconds += Time.deltaTime;
+
+        if (elapsedSeconds > 1f)
+        {
+            Vector3 arrowDirection = new Vector3(0, 0.5f, 0.5f);
+
+            GameObject arrow = Instantiate(prefabArrow, transform.position, transform.rotation);
+            arrow.GetComponent<Rigidbody>().AddRelativeForce(700f * arrowDirection);
+
+            Physics.IgnoreCollision(arrow.GetComponent<Collider>(), GetComponent<Collider>());
+
+            elapsedSeconds = 0f;
+        }
     }
 }

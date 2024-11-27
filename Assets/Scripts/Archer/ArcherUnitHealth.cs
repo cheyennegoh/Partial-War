@@ -80,7 +80,7 @@ public class ArcherUnitHealth : MonoBehaviour
                 continue;
             }
 
-            ArcherHealth soldierHealth = soldier.GetComponent<ArcherHealth>();
+            Archer soldierHealth = soldier.GetComponent<Archer>();
             if (soldierHealth != null)
             {
                 totalHealth += soldierHealth.health;
