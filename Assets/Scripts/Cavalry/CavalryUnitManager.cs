@@ -12,7 +12,7 @@ public class CavalryUnitManager : MonoBehaviour
     public float spacing = 2f;        // Spacing between units
     public List<string> enemyTag = new List<string>();
     public List<string> allyTag = new List<string>();
-    public float engageRange = 3f;    // Range to start moving towards the enemy unit
+    public float engageRange = 4f;    // Range to start moving towards the enemy unit
     public float attackRange = 2f;     // Range to start attacking the enemy unit
 
     public Vector3 unitCenter;
@@ -131,6 +131,7 @@ public class CavalryUnitManager : MonoBehaviour
             }
 
             // If any soldier is engaged, make all soldiers move toward their nearest enemies
+            Debug.Log(anySoldierEngaged);
             if (anySoldierEngaged)
             {
                 foreach (GameObject soldier in soldiers)

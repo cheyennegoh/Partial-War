@@ -7,7 +7,7 @@ public class Cavalry : MonoBehaviour
 {
     public List<string> enemyTag = new List<string>();
     public float attackRangeSoldier = 1f;  // Melee attack range 
-    public float engageRangeSoldier = 2f;  // Engagement range (move towards enemy)
+    public float engageRangeSoldier = 3f;  // Engagement range (move towards enemy)
 
     public int health = 150;
     public int attackDamage = 10;  
