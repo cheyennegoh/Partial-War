@@ -19,7 +19,7 @@ public class CavalryUnitManager : MonoBehaviour
     private bool anySoldierEngaged = false; // To track if any soldier is engaged
     public bool isPanicked = false;
 
-    private void Start()
+    private void Awake()
     {
         // Initialize soldiers list
         for (int i = 0; i < 9; i++)
@@ -40,6 +40,10 @@ public class CavalryUnitManager : MonoBehaviour
 
             soldiers.Add(soldier);
         }
+    }
+    private void Start()
+    {
+        
 
         if (gameObject.CompareTag("RedCavalryUnit"))
         {
