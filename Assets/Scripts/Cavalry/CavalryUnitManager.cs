@@ -203,6 +203,7 @@ public class CavalryUnitManager : MonoBehaviour
 
     public void MoveFormation(Vector3 targetPosition)
     {
+        Debug.Log("Move Formatin Horse");
         Vector3 groupCenter = CalculateGroupCenter();
 
         foreach (GameObject soldier in soldiers)
@@ -269,13 +270,13 @@ public class CavalryUnitManager : MonoBehaviour
         // Check panic condition: enemies outnumber friends 3:1
         if (enemyCount >= 3 * friendCount)
         {
+            Debug.Log("Here");
             // Move soldiers away from the center of enemies
             Vector3 fleeDirection = (startPosition - CalculateEnemiesCenter(colliders)).normalized;
             Vector3 fleePosition = startPosition + fleeDirection * fleeRadius;
 
             isPanicked = true;
 
-            Debug.Log("We are panicking ahhhhhhhhhhhhhhhhhh");
             MoveFormation(fleePosition);
 
             foreach (var soldier in soldiers)

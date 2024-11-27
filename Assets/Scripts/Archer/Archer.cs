@@ -8,11 +8,11 @@ public class Archer : MonoBehaviour
     [SerializeField]
     GameObject prefabArrow;
 
-    public float arrowVelocity = 700f;
+    public float arrowVelocity = 500f;
     private float elapsedSeconds = 0f;
 
     public List<string> enemyTag = new List<string>();
-    public float attackRangeSoldier = 1f;  // Melee attack range 
+    public float attackRangeSoldier = 10f;  
     public float engageRangeSoldier = 20f;  // Engagement range (move towards enemy)
 
     public int health = 200;
@@ -61,8 +61,9 @@ public class Archer : MonoBehaviour
                 if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
                 {
                     navMeshAgent.SetDestination(transform.position); // Stop the agent
+                    ShootBow();
                 }
-                ShootBow();
+                
             }
             else if (distance <= engageRangeSoldier)
             {
@@ -160,6 +161,31 @@ public class Archer : MonoBehaviour
 
         if (elapsedSeconds > 1f)
         {
+            GameObject nearestEnemy = FindNearestEnemy();
+            if (nearestEnemy == null) return;
+
+            Vector3 arrowDirection = nearestEnemy.transform.position - transform.position;
+            arrowDirection.Normalize();
+
+            GameObject arrow = Instantiate(prefabArrow, transform.position, transform.rotation);
+            Vector3 change = new Vector3(0, 1f, 0);
+            Vector3 final = change + arrowDirection;
+            final = final.normalized;
+            arrow.GetComponent<Rigidbody>().AddForce(arrowVelocity * final);
+
+            Physics.IgnoreCollision(arrow.GetComponent<Collider>(), GetComponent<Collider>());
+
+            elapsedSeconds = 0f;
+        }
+    }
+
+    /*public void ShootBow()
+    {
+        elapsedSeconds += Time.deltaTime;
+
+        if (elapsedSeconds > 1f)
+        {
+
             Vector3 arrowDirection = new Vector3(0, 0.5f, 0.5f);
 
             GameObject arrow = Instantiate(prefabArrow, transform.position, transform.rotation);
@@ -169,5 +195,8 @@ public class Archer : MonoBehaviour
 
             elapsedSeconds = 0f;
         }
-    }
+    }*/
+
+
+
 }

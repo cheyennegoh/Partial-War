@@ -117,6 +117,15 @@ public class SoldierHealth : MonoBehaviour
                 }
                 lastAttackTime = Time.time;
             }
+            if (enemy.tag == "BlueArcher" || enemy.tag == "RedArcher")
+            {
+                Archer enemySoldier = enemy.GetComponent<Archer>();
+                if (enemySoldier != null)
+                {
+                    enemySoldier.TakeDamage(attackDamage);
+                }
+                lastAttackTime = Time.time;
+            }
         }
     }
 

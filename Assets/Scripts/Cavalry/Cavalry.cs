@@ -26,6 +26,8 @@ public class Cavalry : MonoBehaviour
     public int specialAttack = 2;
     public float specialRecharge = 15f;
 
+    public bool isCharge = false;
+
     void Start()
     {
 
@@ -152,7 +154,29 @@ public class Cavalry : MonoBehaviour
                     lastAttackTime = Time.time;
                 }
             }
-            
+            if (enemy.tag == "BlueArcher" || enemy.tag == "RedArcher")
+            {
+
+                Cavalry enemySoldier = enemy.GetComponent<Cavalry>();
+                if (enemySoldier != null)
+                {
+                    if (specialAttack != 0)
+                    {
+                        enemySoldier.TakeDamage(chargeDamage);
+                        specialAttack -= 1;
+                        if (specialAttack == 0)
+                        {
+                            lastSpecialDamage = Time.time;
+                        }
+                    }
+                    else
+                    {
+                        enemySoldier.TakeDamage(attackDamage);
+                    }
+                    lastAttackTime = Time.time;
+                }
+            }
+
         }
     }
 

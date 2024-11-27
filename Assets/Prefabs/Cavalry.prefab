@@ -133,7 +133,7 @@ Rigidbody:
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
   m_UseGravity: 1
-  m_IsKinematic: 0
+  m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
@@ -176,9 +176,11 @@ MonoBehaviour:
   engageRangeSoldier: 2
   health: 150
   attackDamage: 5
-  chargeDamage: 20
   attackCooldown: 2
   isPanicked: 0
   normalSpeed: 3.5
   panicSpeed: 5
   isEngaged: 0
+  chargeDamage: 20
+  specialAttack: 2
+  specialRecharge: 15
