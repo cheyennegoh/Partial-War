@@ -17,6 +17,8 @@ TagManager:
   - BlueSoldierUnit
   - RedCavalryUnit
   - BlueCavalryUnit
+  - RedArcherUnit
+  - BlueArcherUnit
   layers:
   - Default
   - TransparentFX

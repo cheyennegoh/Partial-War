@@ -1,18 +1,18 @@
-using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class CavalryUnitManager : MonoBehaviour
+public class ArcherUnitManager : MonoBehaviour
 {
     [SerializeField]
     GameObject prefabCapsule;
-
+    
     public List<GameObject> soldiers;
     public float spacing = 2f;        // Spacing between units
     public List<string> enemyTag = new List<string>();
     public List<string> allyTag = new List<string>();
-    public float engageRange = 4f;    // Range to start moving towards the enemy unit
+    public float engageRange = 3f;    // Range to start moving towards the enemy unit
     public float attackRange = 2f;     // Range to start attacking the enemy unit
 
     public Vector3 unitCenter;
@@ -27,25 +27,24 @@ public class CavalryUnitManager : MonoBehaviour
             GameObject soldier = Instantiate<GameObject>(prefabCapsule, transform);
             Renderer rend = soldier.GetComponent<Renderer>();
 
-            if (gameObject.CompareTag("RedCavalryUnit"))
+            if (gameObject.CompareTag("RedArcherUnit"))
             {
-                soldier.tag = "RedCavalry";
+                soldier.tag = "RedArcher";
                 rend.material.color = Color.red;
             }
-            else if (gameObject.CompareTag("BlueCavalryUnit"))
+            else if (gameObject.CompareTag("BlueArcherUnit"))
             {
-                soldier.tag = "BlueCavalry";
+                soldier.tag = "BlueArcher";
                 rend.material.color = Color.blue;
             }
 
             soldiers.Add(soldier);
         }
     }
+
     private void Start()
     {
-        
-
-        if (gameObject.CompareTag("RedCavalryUnit"))
+        if (gameObject.CompareTag("RedArcherUnit"))
         {
             enemyTag.Add("BlueSoldier");
             enemyTag.Add("BlueCavalry");
@@ -57,7 +56,7 @@ public class CavalryUnitManager : MonoBehaviour
 
             //enemyTag = "BlueSoldier";
         }
-        else if (gameObject.CompareTag("BlueCavalryUnit"))
+        else if (gameObject.CompareTag("BlueArcherUnit"))
         {
             enemyTag.Add("RedSoldier");
             enemyTag.Add("RedCavalry");
@@ -85,8 +84,8 @@ public class CavalryUnitManager : MonoBehaviour
                 soldiers.RemoveAt(i); // Safely remove the soldier
             }
         }
-        if (soldiers.Count == 0)
-        {
+        if (soldiers.Count == 0) 
+        { 
             Destroy(gameObject);
         }
 
@@ -102,7 +101,7 @@ public class CavalryUnitManager : MonoBehaviour
             {
                 if (soldier == null) continue;
 
-                Cavalry soldierHealth = soldier.GetComponent<Cavalry>();
+                ArcherHealth soldierHealth = soldier.GetComponent<ArcherHealth>();
                 if (soldierHealth != null)
                 {
                     GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
@@ -137,7 +136,7 @@ public class CavalryUnitManager : MonoBehaviour
                 {
                     if (soldier == null) continue;
 
-                    Cavalry soldierHealth = soldier.GetComponent<Cavalry>();
+                    ArcherHealth soldierHealth = soldier.GetComponent<ArcherHealth>();
                     if (soldierHealth != null)
                     {
                         GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
@@ -166,7 +165,7 @@ public class CavalryUnitManager : MonoBehaviour
             }
         }
 
-
+        
     }
 
 
@@ -280,12 +279,12 @@ public class CavalryUnitManager : MonoBehaviour
 
             foreach (var soldier in soldiers)
             {
-                if (soldier != null && soldier.activeInHierarchy)
+                if(soldier != null && soldier.activeInHierarchy)
                 {
                     soldier.GetComponent<NavMeshAgent>().speed = 5f;
                 }
             }
-
+                
 
         }
         else
@@ -297,7 +296,7 @@ public class CavalryUnitManager : MonoBehaviour
                     soldier.GetComponent<NavMeshAgent>().speed = 3.5f;
                 }
             }
-            isPanicked = false;
+            isPanicked =false;
         }
     }
 
@@ -331,7 +330,7 @@ public class CavalryUnitManager : MonoBehaviour
 
         foreach (GameObject soldier in soldiers)
         {
-            if (soldier != null && soldier.activeInHierarchy)
+            if (soldier != null && soldier.activeInHierarchy)  
             {
                 center += soldier.transform.position;
                 activeSoldiersCount++;
@@ -341,4 +340,5 @@ public class CavalryUnitManager : MonoBehaviour
         if (activeSoldiersCount == 0) return transform.position;
         return center / activeSoldiersCount;
     }
+
 }
