@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Archer : Soldier
@@ -5,7 +6,7 @@ public class Archer : Soldier
     [SerializeField]
     GameObject prefabArrow;
 
-    float arrowVelocity = 700f;
+    float arrowVelocity = 600;
     float elapsedSeconds = 0f;
 
     protected override void Start()
@@ -31,22 +32,20 @@ public class Archer : Soldier
     }
 
     override public void Attack(GameObject enemy)
-    {
+    {   
         elapsedSeconds += Time.deltaTime;
 
         if (elapsedSeconds > 1f)
         {
             if (enemy == null) return;
 
-            Vector3 arrowDirection = enemy.transform.position - transform.position;
-            arrowDirection.Normalize();
-
             GameObject arrow = Instantiate(prefabArrow, transform.position, transform.rotation);
-            Vector3 change = new Vector3(0, 1f, 0);
-            Vector3 final = change + arrowDirection;
-            final = final.normalized;
-            arrow.GetComponent<Rigidbody>().AddForce(arrowVelocity * final);
 
+            Vector3 horz = enemy.transform.position - transform.position;
+            Vector3 vert = new Vector3(0, 1f, 0);
+            Vector3 arrowDirection = horz.normalized + vert;
+
+            arrow.GetComponent<Rigidbody>().AddForce(arrowVelocity * arrowDirection.normalized);
             Physics.IgnoreCollision(arrow.GetComponent<Collider>(), GetComponent<Collider>());
 
             elapsedSeconds = 0;

@@ -22,6 +22,10 @@ public class Arrow : MonoBehaviour
         if (hit.CompareTag("RedMilitia") || hit.CompareTag("BlueMilitia") || hit.CompareTag("RedCavalry") || hit.CompareTag("BlueCavalry") || hit.CompareTag("RedArcher") || hit.CompareTag("BlueArcher"))
         {
             hit.GetComponent<Soldier>().TakeDamage(damage);
+        }
+
+        if (!hit.CompareTag("Arrow"))
+        {
             Destroy(gameObject);
         }
     }

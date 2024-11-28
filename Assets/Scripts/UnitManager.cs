@@ -162,7 +162,7 @@ public class UnitManager : MonoBehaviour
                 if (!hasArrangedAfterEngagement)
                 {
                     // Weird behaviour on initialisation
-                    // ArrangeGrid(CalculateGroupCenter(), 3);
+                    ArrangeGrid(CalculateGroupCenter(), 3);
                     hasArrangedAfterEngagement = true;
                 }
             }
