@@ -3,12 +3,14 @@ using UnityEngine;
 public class Militia : Soldier
 {
     int attackDamage = 10;
-    float attackCooldown = 2f;
+    float attackCooldown = 1f;
     float lastAttackTime;
 
     protected override void Start()
     {
-        health = 10;
+        attackRangeSoldier = 1;
+        engageRangeSoldier = 2;
+        health = 200;
         
         base.Start();
         

@@ -5,8 +5,8 @@ using UnityEngine.AI;
 public class Soldier : MonoBehaviour
 {
     protected List<string> enemyTag = new List<string>();
-    protected float attackRangeSoldier = 1f;  // Melee attack range 
-    protected float engageRangeSoldier = 2f;  // Engagement range (move towards enemy)
+    protected float attackRangeSoldier;  // Melee attack range 
+    protected float engageRangeSoldier;  // Engagement range (move towards enemy)
     public int health;
     protected NavMeshAgent navMeshAgent;
 

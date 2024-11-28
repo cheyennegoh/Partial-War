@@ -17,8 +17,8 @@ public class UnitHealth : MonoBehaviour
     int currentHealth;     // The current total health of all soldiers
 
     float heightOffset = 2f;  // Offset to position health bar above the unit
-    float bannerOffset = 0.5f;
-    float bannerOppacity = 0.8f;
+    float bannerOffset = 3.5f;
+    float bannerOpacity = 0.3f;
 
     void Start()
     {
@@ -39,7 +39,7 @@ public class UnitHealth : MonoBehaviour
             healthSlider.value = currentHealth;
         }
 
-        SetBannerOpacity(bannerOppacity);
+        SetBannerOpacity(bannerOpacity);
         PositionHealthBar();
     }
 

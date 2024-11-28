@@ -5,11 +5,13 @@ public class Archer : Soldier
     [SerializeField]
     GameObject prefabArrow;
 
-    float arrowVelocity = 500f;
+    float arrowVelocity = 700f;
     float elapsedSeconds = 0f;
 
     protected override void Start()
     {
+        attackRangeSoldier = 20;
+        engageRangeSoldier = 2;
         health = 10;
         
         base.Start();

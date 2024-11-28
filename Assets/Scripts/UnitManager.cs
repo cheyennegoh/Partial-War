@@ -39,6 +39,22 @@ public class UnitManager : MonoBehaviour
     
     void Start()
     {
+        if (gameObject.CompareTag("RedMilitiaUnit") || gameObject.CompareTag("BlueMilitiaUnit"))
+        {
+            engageRange = 10f;
+            attackRange = 3f;
+        }
+        else if (gameObject.CompareTag("RedCavalryUnit") || gameObject.CompareTag("BlueCavalryUnit"))
+        {
+            engageRange = 10f;
+            attackRange = 2f;
+        }
+        else 
+        {
+            engageRange = 3f;
+            attackRange = 2f;
+        }
+        
         if (gameObject.CompareTag("RedMilitiaUnit") || gameObject.CompareTag("RedCavalryUnit") || gameObject.CompareTag("RedArcherUnit"))
         {
             enemyTag.Add("BlueMilitia");
