@@ -1,79 +1,68 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 
 public class UnitManager : MonoBehaviour
 {
     [SerializeField]
-    GameObject prefabCapsule;
+    GameObject prefabMilitia;
+
+    [SerializeField]
+    GameObject prefabCavalry;
+
+    [SerializeField]
+    GameObject prefabArcher;
     
-    public List<GameObject> soldiers;
-    public float spacing = 2f;        // Spacing between units
-    public List<string> enemyTag = new List<string>();
-    public List<string> allyTag = new List<string>();
-    public float engageRange = 3f;    // Range to start moving towards the enemy unit
-    public float attackRange = 2f;     // Range to start attacking the enemy unit
+    List<GameObject> soldiers = new List<GameObject>();
+    float spacing = 2f;        // Spacing between units
+    List<string> enemyTag = new List<string>();
+    List<string> allyTag = new List<string>();
+    float engageRange = 3f;    // Range to start moving towards the enemy unit
+    float attackRange = 2f;     // Range to start attacking the enemy unit
 
-    public Vector3 unitCenter;
-    private bool anySoldierEngaged = false; // To track if any soldier is engaged
-    public bool isPanicked = false;
+    Vector3 unitCenter;
+    bool anySoldierEngaged = false; // To track if any soldier is engaged
+    bool isPanicked = false;
 
-    private void Start()
+    bool hasArrangedAfterEngagement = false;  // Flag to ensure ArrangeGrid is called only once after engagement
+
+    void Awake()
     {
         // Initialize soldiers list
         for (int i = 0; i < 9; i++)
         {
-            GameObject soldier = Instantiate<GameObject>(prefabCapsule, transform);
-            Renderer rend = soldier.GetComponent<Renderer>();
-
-            if (gameObject.CompareTag("RedSoldierUnit"))
-            {
-                soldier.tag = "RedSoldier";
-                rend.material.color = Color.red;
-            }
-            else if (gameObject.CompareTag("BlueSoldierUnit"))
-            {
-                soldier.tag = "BlueSoldier";
-                rend.material.color = Color.blue;
-            }
-
-            soldiers.Add(soldier);
-        }
-
-        if (gameObject.CompareTag("RedSoldierUnit"))
-        {
-            enemyTag.Add("BlueSoldier");
-            enemyTag.Add("BlueCavalry");
-            enemyTag.Add("BlueArcher");
-
-            allyTag.Add("RedSoldier");
-            allyTag.Add("RedCavalry");
-            allyTag.Add("RedArcher");
-
-            //enemyTag = "BlueSoldier";
-        }
-        else if (gameObject.CompareTag("BlueSoldierUnit"))
-        {
-            enemyTag.Add("RedSoldier");
-            enemyTag.Add("RedCavalry");
-            enemyTag.Add("RedArcher");
-
-
-            allyTag.Add("BlueSoldier");
-            allyTag.Add("BlueCavalry");
-            allyTag.Add("BlueArcher");
-            //enemyTag = "RedSoldier";
+            CreateSoldier();
         }
 
         ArrangeGridInPlace();
     }
-
-    private bool hasArrangedAfterEngagement = false;  // Flag to ensure ArrangeGrid is called only once after engagement
-
-    private void Update()
+    
+    void Start()
     {
+        if (gameObject.CompareTag("RedMilitiaUnit") || gameObject.CompareTag("RedCavalryUnit") || gameObject.CompareTag("RedArcherUnit"))
+        {
+            enemyTag.Add("BlueMilitia");
+            enemyTag.Add("BlueCavalry");
+            enemyTag.Add("BlueArcher");
 
+            allyTag.Add("RedMilitia");
+            allyTag.Add("RedCavalry");
+            allyTag.Add("RedArcher");
+        }
+        else
+        {
+            enemyTag.Add("RedMilitia");
+            enemyTag.Add("RedCavalry");
+            enemyTag.Add("RedArcher");
+
+            allyTag.Add("BlueMilitia");
+            allyTag.Add("BlueCavalry");
+            allyTag.Add("BlueArcher");
+        }
+    }
+
+    void Update()
+    {
         for (int i = soldiers.Count - 1; i >= 0; i--) // Iterate backward
         {
             if (soldiers[i] == null || !soldiers[i].activeInHierarchy)
@@ -98,7 +87,7 @@ public class UnitManager : MonoBehaviour
             {
                 if (soldier == null) continue;
 
-                SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
+                Soldier soldierHealth = soldier.GetComponent<Soldier>();
                 if (soldierHealth != null)
                 {
                     GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
@@ -133,7 +122,7 @@ public class UnitManager : MonoBehaviour
                 {
                     if (soldier == null) continue;
 
-                    SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
+                    Soldier soldierHealth = soldier.GetComponent<Soldier>();
                     if (soldierHealth != null)
                     {
                         GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
@@ -156,19 +145,72 @@ public class UnitManager : MonoBehaviour
             {
                 if (!hasArrangedAfterEngagement)
                 {
-                    ArrangeGrid(CalculateGroupCenter(), 3);
+                    // Weird behaviour on initialisation
+                    // ArrangeGrid(CalculateGroupCenter(), 3);
                     hasArrangedAfterEngagement = true;
                 }
             }
         }
-
-        
     }
 
+    void CreateSoldier()
+    {
+        GameObject soldier;
+        
+        // Instantiate prefab
+        if (gameObject.CompareTag("RedMilitiaUnit") || gameObject.CompareTag("BlueMilitiaUnit"))
+        {
+            soldier = Instantiate(prefabMilitia, transform);
+        }
+        else if (gameObject.CompareTag("RedCavalryUnit") || gameObject.CompareTag("BlueCavalryUnit"))
+        {
+            soldier = Instantiate(prefabCavalry, transform);
+        }
+        else 
+        {
+            soldier = Instantiate(prefabArcher, transform);
+        }
 
+        // Tag object
+        if (gameObject.CompareTag("RedMilitiaUnit"))
+        {
+            soldier.tag = "RedMilitia";
+        }
+        else if (gameObject.CompareTag("BlueMilitiaUnit"))
+        {
+            soldier.tag = "BlueMilitia";
+        }
+        else if (gameObject.CompareTag("RedCavalryUnit"))
+        {
+            soldier.tag = "RedCavalry";
+        }
+        else if (gameObject.CompareTag("BlueCavalryUnit"))
+        {
+            soldier.tag = "BlueCavalry";
+        }
+        else if (gameObject.CompareTag("RedArcherUnit"))
+        {
+            soldier.tag = "RedArcher";
+        }
+        else
+        {
+            soldier.tag = "BlueArcher";
+        }
 
+        // Set material color
+        if (gameObject.CompareTag("RedMilitiaUnit") || gameObject.CompareTag("RedCavalryUnit") || gameObject.CompareTag("RedArcherUnit"))
+        {
+            soldier.GetComponent<Renderer>().material.color = Color.red;
+        }
+        else
+        {
+            soldier.GetComponent<Renderer>().material.color = Color.blue;
+        }
 
-    private void SetDestination(GameObject soldier, Vector3 position)
+        soldiers.Add(soldier);
+    }
+
+    void SetDestination(GameObject soldier, Vector3 position)
     {
         if (soldier == null) return; // Check if soldier is null
         NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
@@ -178,7 +220,7 @@ public class UnitManager : MonoBehaviour
         }
     }
 
-    public void ArrangeGrid(Vector3 startPosition, int rows)
+    void ArrangeGrid(Vector3 startPosition, int rows)
     {
         int cols = Mathf.CeilToInt((float)soldiers.Count / rows);
 
@@ -197,7 +239,7 @@ public class UnitManager : MonoBehaviour
         }
     }
 
-    public void MoveFormation(Vector3 targetPosition)
+    void MoveFormation(Vector3 targetPosition)
     {
         Vector3 groupCenter = CalculateGroupCenter();
 
@@ -211,7 +253,7 @@ public class UnitManager : MonoBehaviour
         }
     }
 
-    public void ArrangeGridInPlace()
+    void ArrangeGridInPlace()
     {
         if (soldiers.Count == 0) return;
 
@@ -235,7 +277,8 @@ public class UnitManager : MonoBehaviour
             soldiers[i].transform.position = position;
         }
     }
-    private void Panic(Vector3 startPosition)
+
+    void Panic(Vector3 startPosition)
     {
         float panicRadius = 15f; // Radius to check for allies and enemies
         float fleeRadius = 30f;
@@ -261,7 +304,6 @@ public class UnitManager : MonoBehaviour
             }
         }
 
-
         // Check panic condition: enemies outnumber friends 3:1
         if (enemyCount >= 3 * friendCount)
         {
@@ -271,12 +313,11 @@ public class UnitManager : MonoBehaviour
 
             isPanicked = true;
 
-            Debug.Log("We are panicking ahhhhhhhhhhhhhhhhhh");
             MoveFormation(fleePosition);
 
             foreach (var soldier in soldiers)
             {
-                if(soldier != null && soldier.activeInHierarchy)
+                if (soldier != null && soldier.activeInHierarchy)
                 {
                     soldier.GetComponent<NavMeshAgent>().speed = 5f;
                 }
@@ -293,11 +334,11 @@ public class UnitManager : MonoBehaviour
                     soldier.GetComponent<NavMeshAgent>().speed = 3.5f;
                 }
             }
-            isPanicked =false;
+            isPanicked = false;
         }
     }
 
-    private Vector3 CalculateEnemiesCenter(Collider[] colliders)
+    Vector3 CalculateEnemiesCenter(Collider[] colliders)
     {
         Vector3 enemyCenter = Vector3.zero;
         int enemyCount = 0;
@@ -317,8 +358,7 @@ public class UnitManager : MonoBehaviour
         return enemyCount > 0 ? enemyCenter / enemyCount : Vector3.zero;
     }
 
-
-    private Vector3 CalculateGroupCenter()
+    Vector3 CalculateGroupCenter()
     {
         if (soldiers.Count == 0) return transform.position;
 
@@ -337,5 +377,4 @@ public class UnitManager : MonoBehaviour
         if (activeSoldiersCount == 0) return transform.position;
         return center / activeSoldiersCount;
     }
-
 }

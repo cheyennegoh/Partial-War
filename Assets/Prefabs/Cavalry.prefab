@@ -171,16 +171,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a08ffa38cba69a644ae9294936e71649, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyTag: []
-  attackRangeSoldier: 1
-  engageRangeSoldier: 2
-  health: 150
-  attackDamage: 5
-  attackCooldown: 2
-  isPanicked: 0
-  normalSpeed: 3.5
-  panicSpeed: 5
-  isEngaged: 0
-  chargeDamage: 20
-  specialAttack: 2
-  specialRecharge: 15
+  health: 0

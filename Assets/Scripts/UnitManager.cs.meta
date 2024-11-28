@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: 28e2e0ef31fbfc74bb4775cd8da3e40c
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - prefabMilitia: {fileID: 4657890804631995775, guid: c4329b8e4f58a604fa9f0f3219f363ea, type: 3}
+  - prefabCavalry: {fileID: 4657890804631995775, guid: 6297b1c91580f4c4b83c0550fdf17d0b, type: 3}
+  - prefabArcher: {fileID: 4657890804631995775, guid: ed0ec35f166d51842a83e77557641606, type: 3}
+  executionOrder: -50
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

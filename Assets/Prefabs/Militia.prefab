@@ -14,9 +14,9 @@ GameObject:
   - component: {fileID: 5077360053557768645}
   - component: {fileID: 5382747484958887702}
   - component: {fileID: 8780269349641310483}
-  - component: {fileID: 8187351317939815231}
+  - component: {fileID: -8195473017989732891}
   m_Layer: 0
-  m_Name: Capsule
+  m_Name: Militia
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -159,7 +159,7 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &8187351317939815231
+--- !u!114 &-8195473017989732891
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -168,16 +168,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4657890804631995775}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f49886a4b9d9c9146aa2322ab15ec5c0, type: 3}
+  m_Script: {fileID: 11500000, guid: 6629939b354ca034bb693d27d33da03b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyTag: []
-  attackRangeSoldier: 1
-  engageRangeSoldier: 2
-  health: 200
-  attackDamage: 10
-  attackCooldown: 1
-  isPanicked: 0
-  normalSpeed: 3.5
-  panicSpeed: 5
-  isEngaged: 0
+  health: 0

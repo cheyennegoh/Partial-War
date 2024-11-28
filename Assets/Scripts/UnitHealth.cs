@@ -1,28 +1,31 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class UnitHealth : MonoBehaviour
 {
-    public Slider healthSlider;    // Reference to the health slider UI
-    public List<GameObject> soldiers;
-    public int maxHealth = 1800;    // Maximum health of the unit
-    private int currentHealth;     // The current total health of all soldiers
+    [SerializeField]
+    Slider healthSlider;    // Reference to the health slider UI
 
-    public Transform healthBar;  // Reference to the health bar Canvas
-    public Image bannerIcon;
-    public float heightOffset = 2f;  // Offset to position health bar above the unit
-    public float bannerOffset = 0.5f;
-    public float bannerOppacity = 0.8f;
+    [SerializeField]
+    Transform healthBar;  // Reference to the health bar Canvas
 
-    private void Start()
+    [SerializeField]
+    Image bannerIcon;
+
+    List<GameObject> soldiers;
+    int currentHealth;     // The current total health of all soldiers
+
+    float heightOffset = 2f;  // Offset to position health bar above the unit
+    float bannerOffset = 0.5f;
+    float bannerOppacity = 0.8f;
+
+    void Start()
     {
-        healthSlider.maxValue = maxHealth;
         soldiers = new List<GameObject>();
         foreach (Transform child in transform)
         {
-            if (child.CompareTag("RedSoldier") || child.CompareTag("BlueSoldier"))
+            if (child.CompareTag("RedMilitia") || child.CompareTag("BlueMilitia") || child.CompareTag("RedCavalry") || child.CompareTag("BlueCavalry") || child.CompareTag("RedArcher") || child.CompareTag("BlueArcher"))
             {
                 soldiers.Add(child.gameObject);
             }
@@ -32,7 +35,7 @@ public class UnitHealth : MonoBehaviour
 
         if (healthSlider != null)
         {
-            healthSlider.maxValue = maxHealth;
+            healthSlider.maxValue = currentHealth;
             healthSlider.value = currentHealth;
         }
 
@@ -40,7 +43,7 @@ public class UnitHealth : MonoBehaviour
         PositionHealthBar();
     }
 
-    private void Update()
+    void Update()
     {
         // Recalculate the total health in case any soldier's health has changed
         currentHealth = CalculateTotalHealth();
@@ -64,7 +67,7 @@ public class UnitHealth : MonoBehaviour
         }
     }
 
-    private int CalculateTotalHealth()
+    int CalculateTotalHealth()
     {
         int totalHealth = 0;
 
@@ -80,7 +83,7 @@ public class UnitHealth : MonoBehaviour
                 continue;
             }
 
-            SoldierHealth soldierHealth = soldier.GetComponent<SoldierHealth>();
+            Soldier soldierHealth = soldier.GetComponent<Soldier>();
             if (soldierHealth != null)
             {
                 totalHealth += soldierHealth.health;
@@ -91,7 +94,7 @@ public class UnitHealth : MonoBehaviour
     }
 
     // Position the health bar above the unit and make it face the camera
-    private void PositionHealthBar()
+    void PositionHealthBar()
     {
         if (healthBar == null) return;
 
@@ -100,13 +103,14 @@ public class UnitHealth : MonoBehaviour
         healthBar.position = groupCenter + new Vector3(0, heightOffset, 0);
     }
 
-    private void PositionBannerIcon()
+    void PositionBannerIcon()
     {
         if (bannerIcon == null || healthBar == null) return;
 
         bannerIcon.transform.position = healthBar.position + new Vector3(0, bannerOffset, 0);
     }
-    private void SetBannerOpacity(float opacity)
+
+    void SetBannerOpacity(float opacity)
     {
         if (bannerIcon != null)
         {
@@ -116,7 +120,7 @@ public class UnitHealth : MonoBehaviour
         }
     }
 
-    private Vector3 CalculateGroupCenter()
+    Vector3 CalculateGroupCenter()
     {
         if (soldiers.Count == 0) return transform.position;
 
@@ -128,7 +132,7 @@ public class UnitHealth : MonoBehaviour
         return center / soldiers.Count;
     }
 
-    private void RemoveHealthBar()
+    void RemoveHealthBar()
     {
         if (healthBar != null)
         {

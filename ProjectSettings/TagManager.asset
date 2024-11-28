@@ -4,21 +4,18 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Soldier
-  - RedArmy
-  - BlueArmy
-  - RedSoldier
-  - BlueSoldier
   - RedArcher
   - BlueArcher
   - RedCavalry
   - BlueCavalry
-  - RedSoldierUnit
-  - BlueSoldierUnit
   - RedCavalryUnit
   - BlueCavalryUnit
   - RedArcherUnit
   - BlueArcherUnit
+  - RedMilitiaUnit
+  - BlueMilitiaUnit
+  - RedMilitia
+  - BlueMilitia
   layers:
   - Default
   - TransparentFX
