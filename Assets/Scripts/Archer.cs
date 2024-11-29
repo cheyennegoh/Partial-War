@@ -41,11 +41,12 @@ public class Archer : Soldier
 
             GameObject arrow = Instantiate(prefabArrow, transform.position, transform.rotation);
 
-            Vector3 horz = enemy.transform.position - transform.position;
+            Vector3 horz = (enemy.transform.position - transform.position).normalized;
             Vector3 vert = new Vector3(0, 1f, 0);
-            Vector3 arrowDirection = horz.normalized + vert;
+            Vector3 arrowDirection = (horz + vert).normalized;
 
-            arrow.GetComponent<Rigidbody>().AddForce(arrowVelocity * arrowDirection.normalized);
+            arrow.GetComponent<Rigidbody>().AddForce(arrowVelocity * arrowDirection);
+            arrow.GetComponent<Arrow>().archerTag = gameObject.tag;
             Physics.IgnoreCollision(arrow.GetComponent<Collider>(), GetComponent<Collider>());
 
             elapsedSeconds = 0;
