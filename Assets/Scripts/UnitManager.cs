@@ -17,7 +17,7 @@ public class UnitManager : MonoBehaviour
     float spacing = 2f;        // Spacing between units
     List<string> enemyTag = new List<string>();
     List<string> allyTag = new List<string>();
-    float engageRange = 3f;    // Range to start moving towards the enemy unit
+    float engageRange = 10000f;    // Range to start moving towards the enemy unit
     float attackRange = 2f;     // Range to start attacking the enemy unit
 
     Vector3 unitCenter;
