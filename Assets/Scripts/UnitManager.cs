@@ -26,6 +26,11 @@ public class UnitManager : MonoBehaviour
 
     bool hasArrangedAfterEngagement = false;  // Flag to ensure ArrangeGrid is called only once after engagement
 
+    private bool isCharge = false; // Cavalry Charge stats
+    private float lastChargeTime = 0f;
+    private float chargeDuration = 5f;
+    private float chargeCooldown = 0f;
+
     void Awake()
     {
         // Initialize soldiers list
@@ -114,6 +119,18 @@ public class UnitManager : MonoBehaviour
 
                         if (distance <= attackRange)
                         {
+                            if (soldier.tag.Contains("Cavalry"))
+                            {
+                                UseCharge();
+                                if (isCharge)
+                                {
+                                    soldierHealth.Attack(nearestEnemy, true);
+                                }
+                                else
+                                {
+                                    soldierHealth.Attack(nearestEnemy, false);
+                                }
+                            }
                             soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
                         }
                         else if (distance <= engageRange)
@@ -153,8 +170,6 @@ public class UnitManager : MonoBehaviour
                         }
                     }
                 }
-
-
                 hasArrangedAfterEngagement = false;
             }
             else
@@ -165,6 +180,28 @@ public class UnitManager : MonoBehaviour
                     ArrangeGrid(CalculateGroupCenter(), 3);
                     hasArrangedAfterEngagement = true;
                 }
+            }
+        }
+    }
+    public void UseCharge()
+    {
+
+        if (lastChargeTime == 0f && chargeCooldown >= 15f)
+        {
+            isCharge = true;
+            lastChargeTime = Time.time;
+        }
+        if (chargeDuration >= chargeCooldown)
+        {
+            chargeCooldown = Time.time - lastChargeTime;
+        }
+        else
+        {
+            isCharge = false;
+            chargeCooldown = Time.time - lastChargeTime;
+            if (chargeCooldown >= 15)
+            {
+                lastChargeTime = 0f;
             }
         }
     }

@@ -10,6 +10,8 @@ public class Cavalry : Soldier
     int specialAttack = 2;
     float specialRecharge = 15f;
 
+
+
     protected override void Start()
     {
         health = 150;
@@ -30,7 +32,7 @@ public class Cavalry : Soldier
         }
     }
 
-    override public void Attack(GameObject enemy)
+    override public void Attack(GameObject enemy, bool isCharge)
     {
         if(Time.time - lastSpecialDamage <= specialRecharge)
         {

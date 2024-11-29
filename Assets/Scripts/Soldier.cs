@@ -69,6 +69,7 @@ public class Soldier : MonoBehaviour
     }
 
     virtual public void Attack(GameObject enemy) {}
+    virtual public void Attack(GameObject enemy, bool isCharge) { }
 
     public void TakeDamage(int damage)
     {
