@@ -101,8 +101,6 @@ public class UnitManager : MonoBehaviour
         // Check if any soldier is within the engagement range
         foreach (GameObject soldier in soldiers)
         {
-            if (soldier == null) continue;
-
             Soldier soldierHealth = soldier.GetComponent<Soldier>();
             if (soldierHealth == null) continue;
 
