@@ -44,14 +44,9 @@ public class GeneralAI : MonoBehaviour
             {
                 UnitManager unitManager = child.GetComponent<UnitManager>();
                 Vector3 nearestEnemyPosition = FindNearestEnemy(unitManager.groupCenter);
-                if (Vector3.Distance(nearestEnemyPosition, unitManager.groupCenter) > 5f)
+                if (!unitManager.anySoldierEngaged)
                 {
-                    unitManager.underGeneralCommand = true;
                     unitManager.MoveFormation(nearestEnemyPosition);
-                }
-                else
-                {
-                    unitManager.underGeneralCommand = false;
                 }
             }
         }
