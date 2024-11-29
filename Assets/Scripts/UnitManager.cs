@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Analytics;
 
 public class UnitManager : MonoBehaviour
 {
@@ -133,8 +134,6 @@ public class UnitManager : MonoBehaviour
         {
             foreach (GameObject soldier in soldiers)
             {
-                if (soldier == null) continue;
-
                 Soldier soldierHealth = soldier.GetComponent<Soldier>();
                 if (soldierHealth == null) continue;
 
@@ -219,30 +218,26 @@ public class UnitManager : MonoBehaviour
 
     void SetDestination(GameObject soldier, Vector3 position)
     {
-        if (soldier == null) return; // Check if soldier is null
         NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
-        if (agent != null && agent.isActiveAndEnabled)
-        {
-            agent.SetDestination(position);
-        }
+        if (agent == null || !agent.isActiveAndEnabled) return;
+
+        agent.SetDestination(position);
     }
 
     void ArrangeGrid(Vector3 startPosition, int rows)
     {
         int cols = Mathf.CeilToInt((float)soldiers.Count / rows);
 
-        List<GameObject> activeSoldiers = soldiers.FindAll(soldier => soldier != null); // Filter out dead soldiers
-
-        for (int i = 0; i < activeSoldiers.Count; i++)
+        for (int i = 0; i < soldiers.Count; i++)
         {
             // Skip destroyed soldiers
-            if (activeSoldiers[i] == null) continue;
+            if (soldiers[i] == null) continue;
 
             int row = i / cols;
             int col = i % cols;
 
             Vector3 position = startPosition + new Vector3(col * spacing, 0, row * spacing);
-            SetDestination(activeSoldiers[i], position);
+            SetDestination(soldiers[i], position);
         }
     }
 
@@ -252,8 +247,6 @@ public class UnitManager : MonoBehaviour
 
         foreach (GameObject soldier in soldiers)
         {
-            if (soldier == null) continue;
-
             Vector3 offset = soldier.transform.position - groupCenter;
             Vector3 destination = targetPosition + offset;
             SetDestination(soldier, destination);
@@ -320,10 +313,7 @@ public class UnitManager : MonoBehaviour
 
             foreach (var soldier in soldiers)
             {
-                if (soldier != null && soldier.activeInHierarchy)
-                {
-                    soldier.GetComponent<NavMeshAgent>().speed = 5f;
-                }
+                soldier.GetComponent<NavMeshAgent>().speed = 5f;
             }
                 
             isPanicked = true;
@@ -332,10 +322,7 @@ public class UnitManager : MonoBehaviour
         {
             foreach (var soldier in soldiers)
             {
-                if (soldier != null && soldier.activeInHierarchy)
-                {
-                    soldier.GetComponent<NavMeshAgent>().speed = 3.5f;
-                }
+                soldier.GetComponent<NavMeshAgent>().speed = 3.5f;
             }
 
             isPanicked = false;
@@ -371,11 +358,8 @@ public class UnitManager : MonoBehaviour
 
         foreach (GameObject soldier in soldiers)
         {
-            if (soldier != null && soldier.activeInHierarchy)  
-            {
-                center += soldier.transform.position;
-                activeSoldiersCount++;
-            }
+            center += soldier.transform.position;
+            activeSoldiersCount++;
         }
 
         if (activeSoldiersCount == 0) return transform.position;
