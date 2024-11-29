@@ -14,35 +14,7 @@ public class Soldier : MonoBehaviour
     {
         navMeshAgent = GetComponent<NavMeshAgent>();
     }
-
-    void Update()
-    {
-        // GameObject nearestEnemy = FindNearestEnemy();
-
-        // if (nearestEnemy != null)
-        // {
-        //     float distance = Vector3.Distance(transform.position, nearestEnemy.transform.position);
-
-        //     if (distance <= attackRangeSoldier)
-        //     {
-        //         // Stop moving and attack the enemy
-        //         if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
-        //         {
-        //             navMeshAgent.SetDestination(transform.position); // Stop the agent
-        //         }
-        //         Attack(nearestEnemy);
-        //     }
-        //     else if (distance <= engageRangeSoldier)
-        //     {
-        //         // Move toward the enemy if within detection range but outside attack range
-        //         if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
-        //         {
-        //             navMeshAgent.SetDestination(nearestEnemy.transform.position);
-        //         }
-        //     }
-        // }
-    }
-
+    
     public GameObject FindNearestEnemy()
     {
         GameObject nearestEnemy = null;
