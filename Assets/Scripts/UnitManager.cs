@@ -59,7 +59,7 @@ public class UnitManager : MonoBehaviour
         else 
         {
             engageRange = 20f;
-            attackRange = 15f;
+            attackRange = 25f;
         }
         
         if (gameObject.CompareTag("RedMilitiaUnit") || gameObject.CompareTag("RedCavalryUnit") || gameObject.CompareTag("RedArcherUnit"))
@@ -98,7 +98,14 @@ public class UnitManager : MonoBehaviour
             Destroy(gameObject);
         }
         groupCenter = CalculateGroupCenter();
-        Panic(groupCenter);
+        
+        if (underGeneralCommand)
+        {
+            return;
+        }
+
+        unitCenter = CalculateGroupCenter();
+        Panic(unitCenter);
 
         if (isPanicked == false)
         {
@@ -117,17 +124,9 @@ public class UnitManager : MonoBehaviour
                     if (nearestEnemy != null)
                     {
                         float distance = Vector3.Distance(soldier.transform.position, nearestEnemy.transform.position);
-                        NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
 
                         if (distance <= attackRange)
                         {
-                            // Stop moving and attack the enemy
-                            if (agent != null && agent.isActiveAndEnabled)
-                            {
-                                agent.SetDestination(soldier.transform.position); // Stop the agent
-                            }
-                            
-                            // Attack
                             if (soldier.tag.Contains("Cavalry"))
                             {   
                                 UseCharge();
@@ -144,32 +143,44 @@ public class UnitManager : MonoBehaviour
                             {
                                 soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
                             }
-                            anySoldierEngaged = true;
                         }
                         else if (distance <= engageRange)
                         {
                             anySoldierEngaged = true;  // Flag that at least one soldier is engaged
 
                             // Move towards the enemy if within engagement range
+                            NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
                             if (agent != null && agent.isActiveAndEnabled)
                             {
-                                // if (soldier.tag.Contains("Archer") && distance < attackRange)
-                                // {
-                                //     agent.SetDestination(soldier.transform.position); // Stop the agent
-                                // }
-                                // else
-                                // {
-                                    agent.SetDestination(nearestEnemy.transform.position);
-                                // }
-                                
+                                agent.SetDestination(nearestEnemy.transform.position);
                             }
                         }
                     }
                 }
             }
 
+            // If any soldier is engaged, make all soldiers move toward their nearest enemies
             if (anySoldierEngaged)
             {
+                foreach (GameObject soldier in soldiers)
+                {
+                    if (soldier == null) continue;
+
+                    Soldier soldierHealth = soldier.GetComponent<Soldier>();
+                    if (soldierHealth != null)
+                    {
+                        GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
+                        if (nearestEnemy != null)
+                        {
+                            // Move all soldiers towards the nearest enemy
+                            NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+                            if (agent != null && agent.isActiveAndEnabled)
+                            {
+                                agent.SetDestination(nearestEnemy.transform.position);
+                            }
+                        }
+                    }
+                }
                 hasArrangedAfterEngagement = false;
             }
             else
@@ -305,6 +316,7 @@ public class UnitManager : MonoBehaviour
 
             SetDestination(soldier, destination);
         }
+        print("here");
     }
 
     void ArrangeGridInPlace()
