@@ -46,17 +46,17 @@ public class UnitManager : MonoBehaviour
     {
         if (gameObject.CompareTag("RedMilitiaUnit") || gameObject.CompareTag("BlueMilitiaUnit"))
         {
-            engageRange = 10f;
+            engageRange = 100f;
             attackRange = 3f;
         }
         else if (gameObject.CompareTag("RedCavalryUnit") || gameObject.CompareTag("BlueCavalryUnit"))
         {
-            engageRange = 10f;
+            engageRange = 100f;
             attackRange = 2f;
         }
         else 
         {
-            engageRange = 3f;
+            engageRange = 100f;
             attackRange = 2f;
         }
         
@@ -109,7 +109,7 @@ public class UnitManager : MonoBehaviour
                 if (soldier == null) continue;
 
                 Soldier soldierHealth = soldier.GetComponent<Soldier>();
-                if (soldierHealth != null)
+                if  (soldierHealth != null)
                 {
                     GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
 
@@ -120,16 +120,9 @@ public class UnitManager : MonoBehaviour
                         if (distance <= attackRange)
                         {
                             if (soldier.tag.Contains("Cavalry"))
-                            {
+                            {   
                                 UseCharge();
-                                if (isCharge)
-                                {
-                                    soldierHealth.Attack(nearestEnemy, true);
-                                }
-                                else
-                                {
-                                    soldierHealth.Attack(nearestEnemy, false);
-                                }
+                                soldierHealth.Attack(nearestEnemy, isCharge);
                             }
                             soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
                         }

@@ -14,7 +14,7 @@ public class Archer : Soldier
     {
         attackRangeSoldier = 20;
         engageRangeSoldier = 2;
-        health = 10;
+        health = 120;
         
         base.Start();
         
