@@ -35,6 +35,7 @@ public class Cavalry : Soldier
             if (enemySoldier != null)
             {
                 if (isCharge)
+                if (isCharge)
                 {
                     enemySoldier.TakeDamage(chargeDamage);
                 }
@@ -46,4 +47,5 @@ public class Cavalry : Soldier
             lastAttackTime = Time.time;
         }
     }
+
 }
