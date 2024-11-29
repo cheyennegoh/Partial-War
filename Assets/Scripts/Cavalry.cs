@@ -7,8 +7,6 @@ public class Cavalry : Soldier
     float lastAttackTime;
     float lastSpecialDamage;
     int chargeDamage = 30;
-    int specialAttack = 2;
-    float specialRecharge = 15f;
 
 
 
@@ -43,7 +41,6 @@ public class Cavalry : Soldier
                 if (isCharge)
                 {
                     enemySoldier.TakeDamage(chargeDamage);
-
                 }
                 else
                 {
