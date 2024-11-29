@@ -8,8 +8,8 @@ public class Militia : Soldier
 
     protected override void Start()
     {
-        attackRangeSoldier = 1;
-        engageRangeSoldier = 2;
+        // attackRangeSoldier = 1f;
+        // engageRangeSoldier = 2f;
         health = 200;
         
         base.Start();

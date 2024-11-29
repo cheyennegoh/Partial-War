@@ -12,8 +12,6 @@ public class Archer : Soldier
 
     protected override void Start()
     {
-        attackRangeSoldier = 20;
-        engageRangeSoldier = 2;
         health = 10;
         
         base.Start();

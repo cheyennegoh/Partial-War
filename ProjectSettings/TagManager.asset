@@ -17,6 +17,8 @@ TagManager:
   - RedMilitia
   - BlueMilitia
   - Arrow
+  - RedArmy
+  - BlueArmy
   layers:
   - Default
   - TransparentFX

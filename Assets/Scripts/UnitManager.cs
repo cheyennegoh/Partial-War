@@ -17,19 +17,21 @@ public class UnitManager : MonoBehaviour
     float spacing = 2f;        // Spacing between units
     List<string> enemyTag = new List<string>();
     List<string> allyTag = new List<string>();
-    float engageRange = 10000f;    // Range to start moving towards the enemy unit
-    float attackRange = 2f;     // Range to start attacking the enemy unit
+    float engageRange;    // Range to start moving towards the enemy unit
+    float attackRange;     // Range to start attacking the enemy unit
 
     Vector3 unitCenter;
-    bool anySoldierEngaged = false; // To track if any soldier is engaged
+    public bool anySoldierEngaged = false; // To track if any soldier is engaged
     bool isPanicked = false;
 
-    bool hasArrangedAfterEngagement = false;  // Flag to ensure ArrangeGrid is called only once after engagement
+    bool hasArrangedAfterEngagement = true;  // Flag to ensure ArrangeGrid is called only once after engagement
 
     private bool isCharge = false; // Cavalry Charge stats
     private float lastChargeTime = 0f;
     private float chargeDuration = 5f;
     private float chargeCooldown = 0f;
+    public bool underGeneralCommand = true;
+    public Vector3 groupCenter;
 
     void Awake()
     {
@@ -56,8 +58,8 @@ public class UnitManager : MonoBehaviour
         }
         else 
         {
-            engageRange = 3f;
-            attackRange = 2f;
+            engageRange = 20f;
+            attackRange = 25f;
         }
         
         if (gameObject.CompareTag("RedMilitiaUnit") || gameObject.CompareTag("RedCavalryUnit") || gameObject.CompareTag("RedArcherUnit"))
@@ -95,6 +97,12 @@ public class UnitManager : MonoBehaviour
         { 
             Destroy(gameObject);
         }
+        groupCenter = CalculateGroupCenter();
+        
+        if (underGeneralCommand)
+        {
+            return;
+        }
 
         unitCenter = CalculateGroupCenter();
         Panic(unitCenter);
@@ -131,7 +139,10 @@ public class UnitManager : MonoBehaviour
                                     soldierHealth.Attack(nearestEnemy, false);
                                 }
                             }
-                            soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
+                            else
+                            {
+                                soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
+                            }
                         }
                         else if (distance <= engageRange)
                         {
@@ -176,7 +187,6 @@ public class UnitManager : MonoBehaviour
             {
                 if (!hasArrangedAfterEngagement)
                 {
-                    // Weird behaviour on initialisation
                     ArrangeGrid(CalculateGroupCenter(), 3);
                     hasArrangedAfterEngagement = true;
                 }
@@ -267,6 +277,7 @@ public class UnitManager : MonoBehaviour
     {
         if (soldier == null) return; // Check if soldier is null
         NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+
         if (agent != null && agent.isActiveAndEnabled)
         {
             agent.SetDestination(position);
@@ -292,7 +303,7 @@ public class UnitManager : MonoBehaviour
         }
     }
 
-    void MoveFormation(Vector3 targetPosition)
+    public void MoveFormation(Vector3 targetPosition)
     {
         Vector3 groupCenter = CalculateGroupCenter();
 
@@ -302,8 +313,10 @@ public class UnitManager : MonoBehaviour
 
             Vector3 offset = soldier.transform.position - groupCenter;
             Vector3 destination = targetPosition + offset;
+
             SetDestination(soldier, destination);
         }
+        print("here");
     }
 
     void ArrangeGridInPlace()
@@ -375,8 +388,6 @@ public class UnitManager : MonoBehaviour
                     soldier.GetComponent<NavMeshAgent>().speed = 5f;
                 }
             }
-                
-
         }
         else
         {

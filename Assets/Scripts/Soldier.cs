@@ -5,8 +5,8 @@ using UnityEngine.AI;
 public class Soldier : MonoBehaviour
 {
     protected List<string> enemyTag = new List<string>();
-    protected float attackRangeSoldier;  // Melee attack range 
-    protected float engageRangeSoldier;  // Engagement range (move towards enemy)
+    // protected float attackRangeSoldier;  // Melee attack range 
+    // protected float engageRangeSoldier;  // Engagement range (move towards enemy)
     public int health;
     protected NavMeshAgent navMeshAgent;
 
@@ -17,30 +17,30 @@ public class Soldier : MonoBehaviour
 
     void Update()
     {
-        GameObject nearestEnemy = FindNearestEnemy();
+        // GameObject nearestEnemy = FindNearestEnemy();
 
-        if (nearestEnemy != null)
-        {
-            float distance = Vector3.Distance(transform.position, nearestEnemy.transform.position);
+        // if (nearestEnemy != null)
+        // {
+        //     float distance = Vector3.Distance(transform.position, nearestEnemy.transform.position);
 
-            if (distance <= attackRangeSoldier)
-            {
-                // Stop moving and attack the enemy
-                if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
-                {
-                    navMeshAgent.SetDestination(transform.position); // Stop the agent
-                }
-                Attack(nearestEnemy);
-            }
-            else if (distance <= engageRangeSoldier)
-            {
-                // Move toward the enemy if within detection range but outside attack range
-                if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
-                {
-                    navMeshAgent.SetDestination(nearestEnemy.transform.position);
-                }
-            }
-        }
+        //     if (distance <= attackRangeSoldier)
+        //     {
+        //         // Stop moving and attack the enemy
+        //         if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
+        //         {
+        //             navMeshAgent.SetDestination(transform.position); // Stop the agent
+        //         }
+        //         Attack(nearestEnemy);
+        //     }
+        //     else if (distance <= engageRangeSoldier)
+        //     {
+        //         // Move toward the enemy if within detection range but outside attack range
+        //         if (navMeshAgent != null && navMeshAgent.isActiveAndEnabled)
+        //         {
+        //             navMeshAgent.SetDestination(nearestEnemy.transform.position);
+        //         }
+        //     }
+        // }
     }
 
     public GameObject FindNearestEnemy()

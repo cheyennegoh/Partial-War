@@ -5,12 +5,7 @@ public class Cavalry : Soldier
     int attackDamage = 10;  
     float attackCooldown = 1.5f;
     float lastAttackTime;
-    float lastSpecialDamage;
     int chargeDamage = 30;
-    int specialAttack = 2;
-    float specialRecharge = 15f;
-
-
 
     protected override void Start()
     {
@@ -34,23 +29,14 @@ public class Cavalry : Soldier
 
     override public void Attack(GameObject enemy, bool isCharge)
     {
-        if(Time.time - lastSpecialDamage <= specialRecharge)
-        {
-            specialAttack = 2;
-        }
         if (Time.time - lastAttackTime >= attackCooldown)
         {
             Soldier enemySoldier = enemy.GetComponent<Soldier>();
             if (enemySoldier != null)
             {
-                if (specialAttack != 0)
+                if (isCharge)
                 {
                     enemySoldier.TakeDamage(chargeDamage);
-                    specialAttack -= 1;
-                    if (specialAttack == 0)
-                    {
-                        lastSpecialDamage = Time.time;
-                    }
                 }
                 else
                 {
