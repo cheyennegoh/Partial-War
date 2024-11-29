@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class GeneralAI : MonoBehaviour
 {
+<<<<<<< HEAD
     public List<string> enemyTag = new List<string>();
     public List<string> allyTag = new List<string>();
 
@@ -81,4 +82,17 @@ public class GeneralAI : MonoBehaviour
         return closestEnemyPosition;
     }
 
+=======
+    // Start is called before the first frame update
+    void Start()
+    {
+        
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+>>>>>>> 0a31fc15b14251bbedaba3016d86d830a777af01
 }
