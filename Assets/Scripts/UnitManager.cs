@@ -24,7 +24,7 @@ public class UnitManager : MonoBehaviour
     bool anySoldierEngaged = false; // To track if any soldier is engaged
     bool isPanicked = false;
 
-    bool hasArrangedAfterEngagement = false;  // Flag to ensure ArrangeGrid is called only once after engagement
+    bool isArranged = true;  // Flag to ensure ArrangeGrid is called only once after engagement
 
     void Awake()
     {
@@ -154,16 +154,14 @@ public class UnitManager : MonoBehaviour
                     }
                 }
 
-
-                hasArrangedAfterEngagement = false;
+                isArranged = false;
             }
             else
             {
-                if (!hasArrangedAfterEngagement)
+                if (!isArranged)
                 {
-                    // Weird behaviour on initialisation
                     ArrangeGrid(CalculateGroupCenter(), 3);
-                    hasArrangedAfterEngagement = true;
+                    isArranged = true;
                 }
             }
         }
