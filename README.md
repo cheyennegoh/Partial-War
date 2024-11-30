@@ -1,4 +1,4 @@
-Finite State Machine - Fethi
-Navigation - Ger
-Perception Systems - Cheyenne
-Steering Behaviours - Ger
+- Finite State Machine - Fethi
+- Navigation - Ger
+- Perception Systems - Cheyenne
+- Steering Behaviours - Ger
