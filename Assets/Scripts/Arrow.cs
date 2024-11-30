@@ -3,7 +3,7 @@ using UnityEngine;
 public class Arrow : MonoBehaviour
 {
     Rigidbody rb;
-    int damage = 15;
+    int damage = 20;
     public string archerTag;
 
     void Start()

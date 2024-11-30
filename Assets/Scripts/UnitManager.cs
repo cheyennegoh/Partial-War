@@ -130,9 +130,8 @@ public class UnitManager : MonoBehaviour
                     UseCharge();
                     soldierHealth.Attack(nearestEnemy, isCharge);
                 }
-                if (soldier.tag.Contains("Archer"))
+                else if (soldier.tag.Contains("Archer"))
                 {
-                    UseCharge();
                     soldierHealth.Attack(nearestEnemy, distance);
                 }
                 else

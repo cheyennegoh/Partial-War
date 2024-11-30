@@ -5,9 +5,9 @@ public class Archer : Soldier
     [SerializeField]
     GameObject prefabArrow;
 
-    float arrowVelocity = 600;
+    float arrowVelocity = 700;
     float elapsedSeconds = 0f;
-    float landingRadius = 0.5f;
+    float landingRadius = 0.25f;
     int meleeDamage = 5;
     float attackCooldown = 1.5f;
     float lastAttackTime;
