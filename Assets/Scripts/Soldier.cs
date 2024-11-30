@@ -57,9 +57,4 @@ public class Soldier : MonoBehaviour
     {
         Destroy(gameObject);
     }
-
-    public bool IsDead()
-    {
-        return health <= 0;
-    }
 }

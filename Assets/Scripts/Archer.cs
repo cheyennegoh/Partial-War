@@ -1,4 +1,3 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Archer : Soldier
@@ -84,10 +83,10 @@ public class Archer : Soldier
             if (Time.time - lastAttackTime >= attackCooldown)
             {
                 Soldier enemySoldier = enemy.GetComponent<Soldier>();
-                if (enemySoldier != null)
-                {
-                    enemySoldier.TakeDamage(meleeDamage);
-                }
+                if (enemySoldier == null) return;
+                
+                enemySoldier.TakeDamage(meleeDamage);
+
                 lastAttackTime = Time.time;
             }
         }

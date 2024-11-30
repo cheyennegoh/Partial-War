@@ -134,9 +134,8 @@ public class UnitHealth : MonoBehaviour
 
     void RemoveHealthBar()
     {
-        if (healthBar != null)
-        {
-            Destroy(healthBar.gameObject);
-        }
+        if (healthBar == null) return;
+
+        Destroy(healthBar.gameObject);
     }
 }

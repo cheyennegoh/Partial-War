@@ -32,17 +32,17 @@ public class Cavalry : Soldier
         if (Time.time - lastAttackTime >= attackCooldown)
         {
             Soldier enemySoldier = enemy.GetComponent<Soldier>();
-            if (enemySoldier != null)
+            if (enemySoldier == null) return;
+            
+            if (isCharge)
             {
-                if (isCharge)
-                {
-                    enemySoldier.TakeDamage(chargeDamage);
-                }
-                else
-                {
-                    enemySoldier.TakeDamage(attackDamage);
-                }
+                enemySoldier.TakeDamage(chargeDamage);
             }
+            else
+            {
+                enemySoldier.TakeDamage(attackDamage);
+            }
+            
             lastAttackTime = Time.time;
         }
     }

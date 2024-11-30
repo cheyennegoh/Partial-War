@@ -8,8 +8,6 @@ public class Militia : Soldier
 
     protected override void Start()
     {
-        // attackRangeSoldier = 1f;
-        // engageRangeSoldier = 2f;
         health = 200;
         
         base.Start();
@@ -33,10 +31,10 @@ public class Militia : Soldier
         if (Time.time - lastAttackTime >= attackCooldown)
         {
             Soldier enemySoldier = enemy.GetComponent<Soldier>();
-            if (enemySoldier != null)
-            {
-                enemySoldier.TakeDamage(attackDamage);
-            }
+            if (enemySoldier == null) return;
+
+            enemySoldier.TakeDamage(attackDamage);
+
             lastAttackTime = Time.time;
         }
     }

@@ -24,7 +24,7 @@ public class UnitManager : MonoBehaviour
     public bool anySoldierEngaged = false; // To track if any soldier is engaged
     bool isPanicked = false;
 
-    bool hasArrangedAfterEngagement = true;  // Flag to ensure ArrangeGrid is called only once after engagement
+    bool isArranged = true;  // Flag to ensure ArrangeGrid is called only once after engagement
 
     private bool isCharge = false; // Cavalry Charge stats
     private float lastChargeTime = 0f;
@@ -100,83 +100,71 @@ public class UnitManager : MonoBehaviour
         groupCenter = CalculateGroupCenter();
         Panic(groupCenter);
 
-        if (isPanicked == false)
+        if (isPanicked) return;
+        
+        anySoldierEngaged = false; // Reset the engaged flag at the start of each update
+
+        // Check if any soldier is within the engagement range
+        foreach (GameObject soldier in soldiers)
         {
-            anySoldierEngaged = false; // Reset the engaged flag at the start of each update
+            if (soldier == null) continue;
 
-            // Check if any soldier is within the engagement range
-            foreach (GameObject soldier in soldiers)
+            Soldier soldierHealth = soldier.GetComponent<Soldier>();
+            if (soldierHealth == null) continue;
+            
+            GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
+            if (nearestEnemy == null) continue;
+            
+            float distance = Vector3.Distance(soldier.transform.position, nearestEnemy.transform.position);
+            NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
+
+            if (distance <= attackRange)
             {
-                if (soldier == null) continue;
-
-                Soldier soldierHealth = soldier.GetComponent<Soldier>();
-                if (soldierHealth != null)
+                // Stop moving and attack the enemy
+                if (agent != null && agent.isActiveAndEnabled)
                 {
-                    GameObject nearestEnemy = soldierHealth.FindNearestEnemy();
+                    agent.SetDestination(soldier.transform.position); // Stop the agent
+                }
+                
+                // Attack
+                if (soldier.tag.Contains("Cavalry"))
+                {
+                    UseCharge();
+                    soldierHealth.Attack(nearestEnemy, isCharge);
+                }
+                if (soldier.tag.Contains("Archer"))
+                {
+                    UseCharge();
+                    soldierHealth.Attack(nearestEnemy, distance);
+                }
+                else
+                {
+                    soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
+                }
+                anySoldierEngaged = true;
+            }
+            else if (distance <= engageRange)
+            {
+                anySoldierEngaged = true;  // Flag that at least one soldier is engaged
 
-                    if (nearestEnemy != null)
-                    {
-                        float distance = Vector3.Distance(soldier.transform.position, nearestEnemy.transform.position);
-                        NavMeshAgent agent = soldier.GetComponent<NavMeshAgent>();
-
-                        if (distance <= attackRange)
-                        {
-                            // Stop moving and attack the enemy
-                            if (agent != null && agent.isActiveAndEnabled)
-                            {
-                                agent.SetDestination(soldier.transform.position); // Stop the agent
-                            }
-                            
-                            // Attack
-                            if (soldier.tag.Contains("Cavalry"))
-                            {
-                                UseCharge();
-                                soldierHealth.Attack(nearestEnemy, isCharge);
-                            }
-                            if (soldier.tag.Contains("Archer"))
-                            {
-                                UseCharge();
-                                soldierHealth.Attack(nearestEnemy, distance);
-                            }
-                            else
-                            {
-                                soldierHealth.Attack(nearestEnemy);  // Attack the nearest enemy
-                            }
-                            anySoldierEngaged = true;
-                        }
-                        else if (distance <= engageRange)
-                        {
-                            anySoldierEngaged = true;  // Flag that at least one soldier is engaged
-
-                            // Move towards the enemy if within engagement range
-                            if (agent != null && agent.isActiveAndEnabled)
-                            {
-                                // if (soldier.tag.Contains("Archer") && distance < attackRange)
-                                // {
-                                //     agent.SetDestination(soldier.transform.position); // Stop the agent
-                                // }
-                                // else
-                                // {
-                                    agent.SetDestination(nearestEnemy.transform.position);
-                                // }
-                                
-                            }
-                        }
-                    }
+                // Move towards the enemy if within engagement range
+                if (agent != null && agent.isActiveAndEnabled)
+                {
+                    agent.SetDestination(nearestEnemy.transform.position);
                 }
             }
+        }
 
-            if (anySoldierEngaged)
+        if (anySoldierEngaged)
+        {
+            isArranged = false;
+        }
+        else
+        {
+            if (!isArranged)
             {
-                hasArrangedAfterEngagement = false;
-            }
-            else
-            {
-                if (!hasArrangedAfterEngagement)
-                {
-                    ArrangeGrid(CalculateGroupCenter(), 3);
-                    hasArrangedAfterEngagement = true;
-                }
+                ArrangeGrid(CalculateGroupCenter(), 3);
+                isArranged = true;
             }
         }
     }

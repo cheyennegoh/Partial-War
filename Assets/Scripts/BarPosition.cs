@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BarPosition : MonoBehaviour
@@ -12,10 +10,9 @@ public class BarPosition : MonoBehaviour
     {
         // Ensure the canvas is in world space
         canvas = GetComponent<Canvas>();
-        if (canvas != null)
-        {
-            canvas.renderMode = RenderMode.WorldSpace;
-        }
+        if (canvas == null) return;
+        
+        canvas.renderMode = RenderMode.WorldSpace;
 
         // Get the unit's GameObject by finding it using the parent name (this will be the unit the canvas is attached to)
         string parentName = gameObject.name; // This gets the name of the GameObject this script is attached to
@@ -29,19 +26,18 @@ public class BarPosition : MonoBehaviour
 
     void Update()
     {
-        if (unit != null && canvas != null)
-        {
-            // Position the canvas just above the unit, with the height offset
-            Vector3 aboveUnitPosition = unit.transform.position + new Vector3(0, heightOffset, 0);
-            canvas.transform.position = aboveUnitPosition;
+        if (unit == null || canvas == null) return;
 
-            // Ensure the canvas always faces the camera (billboarding effect)
-            Vector3 directionToFace = Camera.main.transform.position - canvas.transform.position;
-            directionToFace.y = 0; // Keep the canvas aligned horizontally
-            canvas.transform.rotation = Quaternion.LookRotation(directionToFace);
+        // Position the canvas just above the unit, with the height offset
+        Vector3 aboveUnitPosition = unit.transform.position + new Vector3(0, heightOffset, 0);
+        canvas.transform.position = aboveUnitPosition;
 
-            // Optional: You can add a slight smoothing effect to make the movement smoother
-            canvas.transform.position = Vector3.Lerp(canvas.transform.position, aboveUnitPosition, Time.deltaTime * 10f);
-        }
+        // Ensure the canvas always faces the camera (billboarding effect)
+        Vector3 directionToFace = Camera.main.transform.position - canvas.transform.position;
+        directionToFace.y = 0; // Keep the canvas aligned horizontally
+        canvas.transform.rotation = Quaternion.LookRotation(directionToFace);
+
+        // Optional: You can add a slight smoothing effect to make the movement smoother
+        canvas.transform.position = Vector3.Lerp(canvas.transform.position, aboveUnitPosition, Time.deltaTime * 10f);
     }
 }
