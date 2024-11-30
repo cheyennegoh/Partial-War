@@ -1,10 +1,4 @@
-AI
-
-- Goal drive behaviour<------
-- Navigation<------
-- Perception systems
-- steering behaviour<-----
-- Finte state machines
-- procedural generation??
-
-implement 3 of them
+Finite State Machine - Fethi
+Navigation - Ger
+Perception Systems - Cheyenne
+Steering Behaviours - Ger
