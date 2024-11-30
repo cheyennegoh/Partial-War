@@ -56,8 +56,8 @@ public class UnitManager : MonoBehaviour
         }
         else 
         {
-            engageRange = 20f;
-            attackRange = 15f;
+            engageRange = 25f;
+            attackRange = 20f;
         }
         
         if (gameObject.CompareTag("RedMilitiaUnit") || gameObject.CompareTag("RedCavalryUnit") || gameObject.CompareTag("RedArcherUnit"))
