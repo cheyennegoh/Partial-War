@@ -56,7 +56,7 @@ public class UnitManager : MonoBehaviour
         }
         else 
         {
-            engageRange = 25f;
+            engageRange = 40f;
             attackRange = 20f;
         }
         
