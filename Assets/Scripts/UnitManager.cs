@@ -19,8 +19,6 @@ public class UnitManager : MonoBehaviour
     List<string> allyTag = new List<string>();
     float engageRange;    // Range to start moving towards the enemy unit
     float attackRange;     // Range to start attacking the enemy unit
-
-    Vector3 unitCenter;
     public bool anySoldierEngaged = false; // To track if any soldier is engaged
     bool isPanicked = false;
 
