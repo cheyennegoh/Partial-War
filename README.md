@@ -1,7 +1,7 @@
 Group Members:
--Fethi Denker 24088919
--Cheyenne Goh 24044342
--Gerard O Connell 19192118
+- Fethi Denker 24088919
+- Cheyenne Goh 24044342
+- Gerard O Connell 19192118
 
 Free assets used from Unity store:
 - https://assetstore.unity.com/packages/3d/characters/humanoids/fantasy/low-poly-3d-male-knight-fantasy-character-294447
